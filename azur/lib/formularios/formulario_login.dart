@@ -1,3 +1,4 @@
+import 'package:azur/servicios/usuario.service.dart';
 import 'package:flutter/material.dart';
 
 class FormularioLogin extends StatefulWidget {
@@ -84,7 +85,7 @@ class _FormularioLoginState extends State<FormularioLogin> {
               child: MaterialButton(
                   minWidth: MediaQuery.of(context).size.width,
                   padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                  onPressed: () {
+                  onPressed: () async{
                       // Si el formulario es valido
                       if (_formKey.currentState.validate()) {
                       // Si es valido se mostrar un mensaje
@@ -92,6 +93,12 @@ class _FormularioLoginState extends State<FormularioLogin> {
                         .showSnackBar(SnackBar(content: Text('Procesando datos..')));
                       _formKey.currentState.save();    
                       // Llamar al servicio de login 
+                          await login(_email,_password).then(
+                            (usuario){
+                                Scaffold.of(context)
+                                  .showSnackBar(SnackBar(content: Text('Bienvenido: ${usuario.email}')));
+                             }
+                          ).catchError((error){print("El error: $error");});
                           // new usuario(_email,_password).login().then().catch() Metodo async
                       // Si es correcto ir a la siguiente pantalla
                       // Si no es correcto mostrar los errores        

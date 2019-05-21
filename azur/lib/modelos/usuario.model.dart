@@ -1,9 +1,9 @@
 class Usuario {
-    int id; 
+    String id; 
     String cedulaRuc;
     String telefono;
-    String correo;
-    int tipo;
+    String email;
+    String tipo;
     
 
     // Factory recibe el json desde el servicio y retorna una instancia del usuario
@@ -17,10 +17,10 @@ class Usuario {
 
     // Deserializar el usuario desde el json
      Usuario.deserializar(Map json):
-      id = json["id"].toInt(),
+      id = json["id"],
       cedulaRuc = json["cedulaRuc"],
       telefono = json["telefono"],
-      correo = json["correo"],
-      tipo = json["tipo"].toInt();
+      email = json["email"],
+      tipo = json["tipo"];
 
 }
