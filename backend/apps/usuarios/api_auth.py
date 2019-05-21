@@ -1,7 +1,12 @@
 from pytz import unicode
-from rest_framework.permissions import IsAuthenticated
+from rest_framework import status
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from apps.usuarios.helpers import enviar_email
+from apps.usuarios.serializers import UserSerializer
 
 
 class ObtenerUsuario(APIView):
@@ -16,3 +21,16 @@ class ObtenerUsuario(APIView):
             'tipo': unicode(request.user.tipo.id),
         }
         return Response(content)
+
+
+@api_view(['POST'])
+@permission_classes((AllowAny,))
+def create_user(request):
+    serialized = UserSerializer(data=request.data)
+    if serialized.is_valid():
+        serialized.save()
+        # Llamar al metodo para enviar email
+        enviar_email(request, serialized.data.get('id'), serialized.data.get('cedulaRuc'), serialized.data.get('email'))
+        return Response(serialized.data, status=status.HTTP_201_CREATED)
+    else:
+        return Response(serialized._errors, status=status.HTTP_400_BAD_REQUEST)

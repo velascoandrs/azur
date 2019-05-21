@@ -8,9 +8,20 @@ import '../global.dart';
 
 
 
-save() async {
-    print('saving user using a web service');
+Future <bool> save(String email, String password, String telefono, String idNum, int tipo) async {
+  var postUri = Uri.parse("http://$dominio/api/token/");
+  var response = await http.post(postUri,
+     body: {
+       'email': email, 
+       'password': password, 
+       'telefono':telefono, 
+       'cedulaRuc':idNum,
+       'tipo':tipo,
+       }
+      );
+  return json.decode(response.body)['estado'];
 }
+
 
 // Servicio de login, retorna el Token y el Token de refrescamiento
 Future <Usuario> login(String email, String password) async {

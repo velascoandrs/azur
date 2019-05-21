@@ -1,3 +1,4 @@
+import 'package:azur/pages/registro.usuario.dart';
 import 'package:azur/servicios/usuario.service.dart';
 import 'package:flutter/material.dart';
 
@@ -119,6 +120,7 @@ class _FormularioLoginState extends State<FormularioLogin> {
                   padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
                   onPressed: () {
                       // Ir a pantalla registrar
+                       Navigator.push(context,MaterialPageRoute(builder: (context) => Registro()),);
                   },
                   child: Text('Registrarse',textAlign: TextAlign.center,style: style.copyWith(color: Colors.white, fontWeight: FontWeight.bold),),
                 )
