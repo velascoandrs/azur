@@ -23,7 +23,10 @@ Future <bool> save(String email, String password, String telefono, String idNum,
 Future <bool> validar(String codigo) async {
   var postUri = Uri.parse("http://$dominio/usuarios/activar/$codigo");
   var response = await http.post(postUri,);
-  return json.decode(response.body)['estado'];
+    if(response.statusCode == 201){
+      return true;
+  }
+  return false;
 }
 
 
