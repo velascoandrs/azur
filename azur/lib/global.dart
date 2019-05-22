@@ -1,1 +1,1 @@
-String dominio = "192.168.1.36";
+String dominio = "172.29.66.212";

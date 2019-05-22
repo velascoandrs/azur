@@ -9,16 +9,20 @@ import '../global.dart';
 
 
 Future <bool> save(String email, String password, String telefono, String idNum, int tipo) async {
-  var postUri = Uri.parse("http://$dominio/api/token/");
-  var response = await http.post(postUri,
-     body: {
-       'email': email, 
-       'password': password, 
-       'telefono':telefono, 
-       'cedulaRuc':idNum,
-       'tipo':tipo,
-       }
-      );
+  print("Antes del post");
+  var postUri = Uri.parse("http://$dominio/usuarios/crear_usuario");
+  var response = await http.post(postUri,body: {'email': email, 'password': password, 'telefono':telefono, 'cedulaRuc':idNum,'tipo':tipo.toString(),});
+  print("Despues del post");
+  print(response.statusCode);
+  if(response.statusCode == 201){
+      return true;
+  }
+  return false;
+}
+
+Future <bool> validar(String codigo) async {
+  var postUri = Uri.parse("http://$dominio/usuarios/activar/$codigo");
+  var response = await http.post(postUri,);
   return json.decode(response.body)['estado'];
 }
 

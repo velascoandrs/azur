@@ -1,3 +1,4 @@
+import 'package:azur/pages/activacion.dart';
 import 'package:azur/servicios/usuario.service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -92,6 +93,7 @@ class _FormularioRegistroState extends State<FormularioRegistro> {
                                 _tipo = newValue;
                                 state.didChange(newValue);
                                 _tipoId=_tipos.indexOf(newValue);
+                                print(_tipoId);
                               });
                             },
                             items: _tipos.map((String value) {
@@ -158,6 +160,7 @@ class _FormularioRegistroState extends State<FormularioRegistro> {
                               (resultado){
                                 if(resultado){
                                       Scaffold.of(context).showSnackBar(SnackBar(content: Text('Registrado!!')));
+                                      Navigator.push(context,MaterialPageRoute(builder: (context) => Activacion()),);
                                 }
                               }
                             ).catchError((error){print("El error: $error");});
@@ -167,7 +170,8 @@ class _FormularioRegistroState extends State<FormularioRegistro> {
                     }
                           // Redirigir a la pantalla de confirmacion
                         },
-                      )),
+                      )
+                    ),
                 ],
               )));
   }
