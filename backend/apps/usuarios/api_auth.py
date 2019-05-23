@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from pytz import unicode
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
@@ -31,6 +32,6 @@ def create_user(request):
         serialized.save()
         # Llamar al metodo para enviar email
         enviar_email(request, serialized.data.get('id'), serialized.data.get('cedulaRuc'), serialized.data.get('email'))
-        return Response(serialized.data, status=status.HTTP_201_CREATED)
+        return JsonResponse({'mensaje':serialized.data}, status=status.HTTP_201_CREATED)
     else:
-        return Response(serialized._errors, status=status.HTTP_400_BAD_REQUEST)
+        return JsonResponse({'mensaje': serialized._errors}, status=status.HTTP_400_BAD_REQUEST)

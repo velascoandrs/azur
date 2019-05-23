@@ -18,6 +18,7 @@ class _FormularioRegistroState extends State<FormularioRegistro> {
   String _telefono = '';
   String _correo = '';
   String _password = '';
+  List<String> _errores = null;
   int _tipoId = 0;
 
   @override
@@ -113,6 +114,8 @@ class _FormularioRegistroState extends State<FormularioRegistro> {
                       hintText: 'Cedula/RUC/Pasaporte',
                       labelText: 'número de identificación',
                     ),
+                    keyboardType: TextInputType.number,
+
                     validator: (value){
                       if(value.isEmpty){
                           return 'Por favor ingrese un número de identificación';
@@ -158,9 +161,16 @@ class _FormularioRegistroState extends State<FormularioRegistro> {
                             // Llamar al servicio de login 
                             await save(_correo,_password,_telefono,_identificador,_tipoId).then(
                               (resultado){
-                                if(resultado){
+                                print(resultado['estado']);
+                                if(resultado['estado']){
                                       Scaffold.of(context).showSnackBar(SnackBar(content: Text('Registrado!!')));
                                       Navigator.push(context,MaterialPageRoute(builder: (context) => Activacion()),);
+                                      
+                                }else{
+                                    setState(() {
+                                      _errores = resultado['errores-list']; 
+                                    });
+                                    
                                 }
                               }
                             ).catchError((error){print("El error: $error");});
@@ -172,6 +182,7 @@ class _FormularioRegistroState extends State<FormularioRegistro> {
                         },
                       )
                     ),
+                    _errores !=null?new Container(child: Text("$_errores"),):new Container()                    
                 ],
               )));
   }

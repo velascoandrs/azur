@@ -8,21 +8,30 @@ import '../global.dart';
 
 
 
-Future <bool> save(String email, String password, String telefono, String idNum, int tipo) async {
-  print("Antes del post");
+Future <Map> save(String email, String password, String telefono, String idNum, int tipo) async {
   var postUri = Uri.parse("http://$dominio/usuarios/crear_usuario");
   var response = await http.post(postUri,body: {'email': email, 'password': password, 'telefono':telefono, 'cedulaRuc':idNum,'tipo':tipo.toString(),});
-  print("Despues del post");
-  print(response.statusCode);
+  Map mensaje = json.decode(response.body)['mensaje'];
   if(response.statusCode == 201){
-      return true;
+      mensaje['estado'] = true;
+  }else{
+      mensaje['estado'] = false;
+      List<String> errores = []; 
+      for (var m in mensaje.keys){
+        errores.add(mensaje[m].toString().substring(1,mensaje[m].toString().length-2));
+      }
+      mensaje['errores-list'] = errores;
+
   }
-  return false;
+  print(mensaje);
+  
+  return mensaje;
 }
 
 Future <bool> validar(String codigo) async {
   var postUri = Uri.parse("http://$dominio/usuarios/activar/$codigo");
   var response = await http.post(postUri,);
+  
     if(response.statusCode == 201){
       return true;
   }
