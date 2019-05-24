@@ -6,6 +6,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.loader import render_to_string
 from django.contrib.auth.models import User
 from django.core.mail import EmailMessage
+from django.views.decorators.csrf import csrf_exempt
 
 from apps.usuarios.models import Tipo
 
@@ -38,7 +39,7 @@ def signup(request):
     else:
         return HttpResponse(status=301)
 
-
+@csrf_exempt
 def activate(request, uidb64):
     try:
         uid = force_text(urlsafe_base64_decode(uidb64))
@@ -46,8 +47,7 @@ def activate(request, uidb64):
         user = get_user_model().objects.get(id=int(uid))
         user.is_active = True
         user.save()
+        return JsonResponse({'estado': True},status=201)
 
     except(TypeError, ValueError, OverflowError, User.DoesNotExist):
         return HttpResponse(status=301)
-    else:
-        return JsonResponse({'estado':True})

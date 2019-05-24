@@ -1,5 +1,8 @@
+import 'dart:ui';
+
 import 'package:azur/pages/activacion.dart';
 import 'package:azur/servicios/usuario.service.dart';
+import 'package:azur/utilitarios/avisos.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -12,34 +15,108 @@ class FormularioRegistro extends StatefulWidget {
 
 class _FormularioRegistroState extends State<FormularioRegistro> {
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+  // Atributos del formulario
   List<String> _tipos = <String>['','NATURAL', 'JURIDICO', 'EXTRANJERA'];
   String _tipo = '';
   String _identificador = '';
   String _telefono = '';
   String _correo = '';
   String _password = '';
-  List<String> _errores = null;
+  List<String> _errores = [];
   int _tipoId = 0;
+
+  Widget campoCedula(){
+    return new TextFormField(
+                    decoration: const InputDecoration(
+                      icon: const Icon(Icons.person),
+                      hintText: 'Cedula',
+                      labelText: 'número de cedula',
+                    ),
+                    maxLength: 10,
+                    keyboardType: TextInputType.number,
+
+                    validator: (value){
+                      if(value.isEmpty){
+                          return 'Por favor ingrese un número valido';
+                      }
+                    },
+                    onSaved: (valor){
+                      setState(() {
+                        _identificador = valor;
+                      });
+                    },
+                  );
+  }
+
+  Widget campoRuc(){
+    return new TextFormField(
+                    decoration: const InputDecoration(
+                      icon: const Icon(Icons.person),
+                      hintText: 'RUC',
+                      labelText: 'número RUC',
+                    ),
+                    maxLength: 13,
+                    keyboardType: TextInputType.number,
+
+                    validator: (value){
+                      if(value.isEmpty){
+                          return 'Por favor ingrese un número valido';
+                      }
+                    },
+                    onSaved: (valor){
+                      setState(() {
+                        _identificador = valor;
+                      });
+                    },
+                  );
+  }
+
+    Widget campoPasaporte(){
+    return new TextFormField(
+                    decoration: const InputDecoration(
+                      icon: const Icon(Icons.person),
+                      hintText: 'Pasaporte',
+                      labelText: 'número de pasaporte',
+                    ),
+                    maxLength: 14,
+                    keyboardType: TextInputType.number,
+
+                    validator: (value){
+                      if(value.isEmpty){
+                          return 'Por favor ingrese un número valido';
+                      }
+                    },
+                    onSaved: (valor){
+                      setState(() {
+                        _identificador = valor;
+                      });
+                    },
+                  );
+  }
+  
 
   @override
   Widget build(BuildContext context) {
     return new SafeArea(
           top: false,
           bottom: false,
-          child: new Form(
+          left:  true,
+          right: true,
+          child:  new Form( // Cuerpo del formulario
               key: _formKey,
               autovalidate: true,
               child: new ListView(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 children: <Widget>[
                   
-                  new TextFormField(
+                  new TextFormField( // TextField para el telefono celular
                     decoration: const InputDecoration(
                       icon: const Icon(Icons.phone),
                       hintText: 'Ingresa un número de teléfono celular',
                       labelText: 'número',
                     ),
-                    validator: (value){
+                    maxLength: 10,
+                    validator: (value){ // fUN
                       if(value.isEmpty){
                           return 'Por favor ingrese un número de teléfono celular';
                       }
@@ -66,6 +143,7 @@ class _FormularioRegistroState extends State<FormularioRegistro> {
                       }
                     },
                     keyboardType: TextInputType.emailAddress,
+
                     onSaved: (valor){
                               setState(() {
                                 _correo = valor;
@@ -81,7 +159,7 @@ class _FormularioRegistroState extends State<FormularioRegistro> {
                     builder: (FormFieldState state) {
                       return InputDecorator(
                         decoration: InputDecoration(
-                          icon: const Icon(Icons.color_lens),
+                          icon: const Icon(Icons.category),
                           labelText: 'Tipo',
                         ),
                         isEmpty: _tipo == '',
@@ -107,26 +185,7 @@ class _FormularioRegistroState extends State<FormularioRegistro> {
                         ),
                       );
                     },
-                  ),
-                  new TextFormField(
-                    decoration: const InputDecoration(
-                      icon: const Icon(Icons.person),
-                      hintText: 'Cedula/RUC/Pasaporte',
-                      labelText: 'número de identificación',
-                    ),
-                    keyboardType: TextInputType.number,
-
-                    validator: (value){
-                      if(value.isEmpty){
-                          return 'Por favor ingrese un número de identificación';
-                      }
-                    },
-                    onSaved: (valor){
-                      setState(() {
-                        _identificador = valor;
-                      });
-                    },
-                  ),
+                  ),_tipoId==1?campoCedula():_tipoId==2?campoRuc():_tipoId==3?campoPasaporte():new Container(),
                   new TextFormField(
                     obscureText: true,
                     decoration: const InputDecoration(
@@ -148,7 +207,10 @@ class _FormularioRegistroState extends State<FormularioRegistro> {
                   ),
                   new Container(
                       padding: const EdgeInsets.only(left: 40.0, top: 20.0),
-                      child: new RaisedButton(
+                      child: new MaterialButton(
+                        color: Colors.greenAccent,
+                        minWidth: MediaQuery.of(context).size.width,
+                        padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
                         child: const Text('Registrar'),
                         onPressed: ()async{
                           //Llamar al servicio de crear
@@ -168,7 +230,8 @@ class _FormularioRegistroState extends State<FormularioRegistro> {
                                       
                                 }else{
                                     setState(() {
-                                      _errores = resultado['errores-list']; 
+                                      _errores = resultado['errores-list'];
+                                      print(_errores); 
                                     });
                                     
                                 }
@@ -182,7 +245,10 @@ class _FormularioRegistroState extends State<FormularioRegistro> {
                         },
                       )
                     ),
-                    _errores !=null?new Container(child: Text("$_errores"),):new Container()                    
+                    new Container(
+                      padding: const EdgeInsets.only(top: 20.0),
+                      child: _errores.length>0?Avisos(mensajes: _errores,):Container()
+                    )
                 ],
               )));
   }

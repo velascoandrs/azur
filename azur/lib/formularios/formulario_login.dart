@@ -1,3 +1,4 @@
+import 'package:azur/home.dart';
 import 'package:azur/pages/registro.usuario.dart';
 import 'package:azur/servicios/usuario.service.dart';
 import 'package:flutter/material.dart';
@@ -98,6 +99,7 @@ class _FormularioLoginState extends State<FormularioLogin> {
                             (usuario){
                                 Scaffold.of(context)
                                   .showSnackBar(SnackBar(content: Text('Bienvenido: ${usuario.email}')));
+                                Navigator.push(context,MaterialPageRoute(builder: (context) => Prototipo()),);  
                              }
                           ).catchError((error){print("El error: $error");});
                           // new usuario(_email,_password).login().then().catch() Metodo async

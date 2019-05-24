@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 
 void main() {
   runApp(new MaterialApp(
+    theme: new ThemeData(
+        brightness: Brightness.dark,                        // new
+    ),
    home: AzurApp(),
   ));
 }
@@ -11,9 +14,8 @@ class AzurApp extends StatelessWidget {
  @override
  Widget build(BuildContext context) {
 
-  return new MaterialApp(
-    title: 'AZUR',
-    home: Scaffold(
+  return Container(
+    child: Scaffold(
       appBar: new AppBar(title: new Text("Login"),),
       body: new Container(
         margin: const EdgeInsets.only(

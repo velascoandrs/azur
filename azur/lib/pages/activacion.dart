@@ -51,14 +51,15 @@ class _ActivacionState extends State<Activacion> {
                           // Si el formulario es valido
                           if (_formKey.currentState.validate()) {
                             // Si es valido se mostrar un mensaje
-                            Scaffold.of(context)
-                              .showSnackBar(SnackBar(content: Text('Procesando datos..')));
+                            /*Scaffold.of(context)
+                              .showSnackBar(SnackBar(content: Text('Procesando datos..')));*/
                             _formKey.currentState.save();    
                             // Llamar al servicio de login 
                             await validar(_codigo).then(
                               (resultado){
+                                print(resultado);
                                 if(resultado){
-                                      Scaffold.of(context).showSnackBar(SnackBar(content: Text('Verificacion completa!!')));
+                                      //Scaffold.of(context).showSnackBar(SnackBar(content: Text('Verificacion completa!!')));
                                       Navigator.push(context,MaterialPageRoute(builder: (context) => AzurApp()));
                                 }
                               }
