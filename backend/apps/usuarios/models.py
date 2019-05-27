@@ -45,9 +45,9 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    email = models.EmailField(unique=True)
-    cedulaRuc = models.CharField(max_length=13, unique=True)
-    telefono = models.CharField(max_length=20, unique=True)
+    email = models.EmailField(unique=True, null=False, blank=False)
+    cedulaRuc = models.CharField(max_length=13, unique=True, db_index=True, null=False, blank=False)
+    telefono = models.CharField(max_length=20, unique=True, null=False, blank=False)
     date_joined = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -59,8 +59,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ['cedulaRuc', 'telefono', 'tipo']
 
     class Meta:
-        verbose_name = 'user'
-        verbose_name_plural = 'users'
+        verbose_name = 'usuario'
+        verbose_name_plural = 'usuarios'
 
     def get_full_name(self):
         full_name = '%s %s' % (self.email, self.cedulaRuc)

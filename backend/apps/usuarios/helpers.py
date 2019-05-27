@@ -11,7 +11,7 @@ def enviar_email(request, pk, cedula, user_email):
     message = render_to_string('acc_active_email.html', {
         'user': cedula,
         'domain': current_site.domain,
-        'uid': urlsafe_base64_encode(force_bytes(pk)),
+        'uid': urlsafe_base64_encode(force_bytes(cedula)),
     })
     to_email = user_email
     email = EmailMessage(
