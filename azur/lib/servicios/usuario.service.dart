@@ -1,6 +1,9 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:azur/modelos/session.dart';
 import 'package:azur/modelos/usuario.model.dart';
+import 'package:azur/utilitarios/session.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
@@ -8,6 +11,8 @@ import '../global.dart';
 
 
 
+
+// Servicio para registrar un usuario
 Future <Map> save(String email, String password, String telefono, String idNum, int tipo) async {
   var postUri = Uri.parse("http://$dominio/usuarios/crear_usuario");
   var response = await http.post(postUri,body: {'email': email, 'password': password, 'telefono':telefono, 'cedulaRuc':idNum,'tipo':tipo.toString(),});
@@ -40,15 +45,26 @@ Future <bool> validar(String codigo) async {
 
 
 // Servicio de login, retorna el Token y el Token de refrescamiento
-Future <Usuario> login(String email, String password) async {
+Future <bool> login(String email, String password) async {
     var postUri = Uri.parse("http://$dominio/api/token/");
     var response = await http.post(postUri, body: {'email': email, 'password': password});
     print('Response status: ${response.statusCode}');
     print('Response body: ${response.body}');
-    return await obtenerDatosUsuario(json.decode(response.body)['access']);
+    if(response.statusCode==401){
+      print("Login invalido");
+      return false;
+    }
+    String token = json.decode(response.body)['access'];
+    String refresToken = json.decode(response.body)['refresh'];
+    Usuario usuario = await obtenerDatosUsuario(token);
+    Session session = new Session(token: token, refreshToken: refresToken, usuario: usuario);
+    guardarSession(session);
+    return true;
 }
 
 
+
+// Obtener los datos del usuario a traves del token de autirzacion
 Future <Usuario> obtenerDatosUsuario(String token)async{
     final response = await http.get(
     'http://$dominio/api/usuario/get',
@@ -58,5 +74,21 @@ Future <Usuario> obtenerDatosUsuario(String token)async{
   print(responseJson.toString());
   return Usuario(responseJson);
 }
+
+
+// Refrescar la session del usuario
+refrescarToken(String refreshToken) async{
+    var postUri = Uri.parse("http://$dominio/api/token/refresh/");
+    var response = await http.post(postUri, body: {'refresh': refreshToken});
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
+
+    String token = json.decode(response.body)['access'];
+    String refresToken = json.decode(response.body)['refresh'];
+    Usuario usuario = await obtenerDatosUsuario(token);
+    Session session = new Session(token: token, refreshToken: refresToken, usuario: usuario);
+    guardarSession(session);
+}
+
 
   

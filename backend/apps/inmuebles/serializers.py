@@ -7,7 +7,7 @@ from apps.inmuebles.models import Inmueble, Imagen
 class ImagenSerializer(serializers.ModelSerializer):
     class Meta:
         model = Imagen
-        fields = '__all__'
+        fields = ('imagen',)
 
 
 # Clase serializada para la tabla inmueble

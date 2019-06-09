@@ -1,22 +1,43 @@
 import 'dart:convert';
+import 'dart:core';
 import 'dart:io';
+import 'package:azur/global.dart';
+import 'package:azur/modelos/inmueble-model.dart';
+import 'package:azur/modelos/inmueble.model.dart';
 import 'package:http/http.dart' as http;
-import 'package:http/http.dart';
 import 'package:http_parser/http_parser.dart';
 
 
 
-Future<bool>subir_imagenes(List<String> paths) async {
-    var postUri = Uri.parse("http://192.168.100.58/api/v1/predecir");
+Future<List<Inmueble>>obtener_publicaciones()async{
+  List<Inmueble> inmuebles = new List();
+  final response = await http.get(
+    'http://$dominio/inmuebles/api/v1/inmuebles/?page=4',
+  );
+  final responseJson = json.decode(response.body)['results'];
+  print(responseJson.toString());
+  for (var publicacion in responseJson){
+    inmuebles.add(Inmueble.fromJson(publicacion));
+    print(Inmueble.fromJson(publicacion).titulo);
+  }
+  //return Usuario(responseJson);
+  return inmuebles;
+}
+
+
+// Subir inmueble a la API
+Future<bool>subir_publicacion(List<String> paths, ) async {
+    var postUri = Uri.parse("http://$dominio/api/v1/inmuebles/post");
 
     var request = new http.MultipartRequest("POST", postUri);
     request.fields['user'] = 'blah';
-    //request.files.add(new http.MultipartFile.fromBytes('file', await File("<path/to/file").readAsBytes(), contentType: new MediaType('image', 'jpeg')));
+   
+   int indice = 0;
     for(String path in paths){
-        request.files.add(new http.MultipartFile.fromBytes('file', File(path).readAsBytesSync(), contentType: new MediaType('image', 'jpeg'),filename: "fachada"));
+        request.files.add(new http.MultipartFile.fromBytes('file$indice', File(path).readAsBytesSync(), contentType: new MediaType('image', 'jpeg'),filename: "fachada"));
+        indice++;
     }
     
-    //request.files.add(new http.MultipartFile.fromBytes('file', File(paths[0]).readAsBytesSync(), contentType: new MediaType('image', 'jpeg'),filename: "jola"));
 
     bool resultado = false;
      await request.send().then((response) {
@@ -29,12 +50,33 @@ Future<bool>subir_imagenes(List<String> paths) async {
         } 
       }
     );
-    /*
-    respuesta.stream.transform(utf8.decoder).listen((value) {
-        print(value);
-    });*/
-    /*respuesta.stream.transform(utf8.decoder).listen((value) {
-        print(value);
-      });*/
       return resultado;
   }
+class HttpHandler{
+
+  Future<dynamic> getJson(Uri uri)async{
+    http.Response response = await http.get(uri);
+    if(response.statusCode == 404){
+      return false;
+    }
+    return json.decode(response.body);
+  }
+
+  Future<List<Inmueble>> recuperarInmuebles(int page){
+    List<Inmueble> vacio = [];
+    // Preparar la URL
+    var uri = new Uri.http(dominio,"inmuebles/api/v1/inmuebles/",{
+      'page':"$page",
+    });
+
+    return getJson(uri).then(
+            (data){
+              if(data!=false){
+                return data['results'].map<Inmueble>((item)=> new Inmueble.fromJson(item)).toList();
+              }
+              print("No existen mas datos!!");
+              return vacio;
+            }
+    );
+  }
+}

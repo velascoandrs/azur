@@ -54,7 +54,7 @@ class _PublicacionCrearState extends State<PublicacionCrear> {
         esta_subiendo = true;
       });
       
-        subir_imagenes(imagenesFachada).then(
+        /*subir_imagenes(imagenesFachada).then(
           (resultado){
               if(resultado){
                 setState(() {
@@ -65,7 +65,7 @@ class _PublicacionCrearState extends State<PublicacionCrear> {
                 print("Todo OK");
               }
          }
-        );
+        );*/
     
       
       

@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 
 
 class Prototipo extends StatefulWidget {
-  
+
+  String usuario;
+  Prototipo({this.usuario});
 
   @override
   _PrototipoState createState() => new _PrototipoState();
@@ -14,7 +16,7 @@ class _PrototipoState extends State<Prototipo> with SingleTickerProviderStateMix
 
    Drawer _getDrawer(BuildContext context){
 
-      var header = new DrawerHeader(child: new Text("Opciones"),);
+      var header = new DrawerHeader(child: new Text("Bienvenido: ${widget.usuario}"),);
       var info = new AboutListTile(
         child: new Text("Informacion App"),
         applicationIcon: new Icon(Icons.location_searching),
@@ -38,6 +40,7 @@ class _PrototipoState extends State<Prototipo> with SingleTickerProviderStateMix
     ListView _listView = new ListView(children: <Widget>[
       header,
       info,
+      //_getItem(new Icon(Icons.people),widget.usuario , ''),
       _getItem(new Icon(Icons.person), "Perfil", "/configuracion"),
       _getItem(new Icon(Icons.exit_to_app), "Cerrar Sesion", "/"),
 
