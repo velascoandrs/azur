@@ -1,9 +1,10 @@
+import 'package:azur/formularios/formulario_publicacion.dart';
 import 'package:azur/servicios/publicacion.service.dart';
 import 'package:azur/widgets/widgets_img_lib.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 
-
+/*
 class PublicacionCrear extends StatefulWidget {
 
   
@@ -170,4 +171,29 @@ class _PublicacionCrearState extends State<PublicacionCrear> {
   }
 }
 
+*/
 
+class PublicacionCrear extends StatefulWidget {
+
+
+
+  @override
+  _PublicacionCrearState createState() => new _PublicacionCrearState();
+}
+class _PublicacionCrearState extends State<PublicacionCrear> {
+
+
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+        appBar: new AppBar(
+          title: new Text("Publicar"),
+        ),
+        body: new Container(
+            child: new Center(
+              child: new FormularioCrearPublicacion(),
+            ),
+        )
+      );
+  }
+}
