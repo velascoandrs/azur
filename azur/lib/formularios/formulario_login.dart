@@ -1,3 +1,7 @@
+import 'package:azur/home.dart';
+import 'package:azur/pages/registro.usuario.dart';
+import 'package:azur/servicios/usuario.service.dart';
+import 'package:azur/utilitarios/session.dart';
 import 'package:flutter/material.dart';
 
 class FormularioLogin extends StatefulWidget {
@@ -36,8 +40,11 @@ class _FormularioLoginState extends State<FormularioLogin> {
          new TextFormField(
            decoration: InputDecoration(
               labelText: "Correo Electrónico",
+              labelStyle: TextStyle(color: Colors.black,fontSize: 20,fontWeight: FontWeight.bold),
               hintText:'email',
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
+              border: OutlineInputBorder(borderSide: BorderSide(color: Colors.black, style: BorderStyle.solid),borderRadius: BorderRadius.circular(32.0)),
+              filled: true,
+              fillColor: Colors.black38
              ),
            validator: (value){
              if(value.isEmpty){
@@ -60,7 +67,8 @@ class _FormularioLoginState extends State<FormularioLogin> {
                 labelText: "Password",
                 hintText:'clave',
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
-                
+                filled: true,
+                fillColor: Colors.black38,
 
              ),
            validator: (value){
@@ -80,11 +88,11 @@ class _FormularioLoginState extends State<FormularioLogin> {
          Material(
               elevation: 5.0,
               borderRadius: BorderRadius.circular(30.0),
-              color: Color(0xff01A0C7),
+              color:Colors.black87,
               child: MaterialButton(
                   minWidth: MediaQuery.of(context).size.width,
                   padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                  onPressed: () {
+                  onPressed: () async{
                       // Si el formulario es valido
                       if (_formKey.currentState.validate()) {
                       // Si es valido se mostrar un mensaje
@@ -92,6 +100,24 @@ class _FormularioLoginState extends State<FormularioLogin> {
                         .showSnackBar(SnackBar(content: Text('Procesando datos..')));
                       _formKey.currentState.save();    
                       // Llamar al servicio de login 
+                          await login(_email,_password).then(
+                            (estato){
+                                if(estato){
+                                  getUserCed().then(
+                                    (valor){
+                                        Scaffold.of(context)
+                                    .showSnackBar(SnackBar(content: Text('Bienvenido: $valor')));
+                                    Navigator.push(context,MaterialPageRoute(builder: (context) => Prototipo(usuario: valor,)),);  
+                                    }
+                                  );
+                                  
+                                }else{
+                                  Scaffold.of(context)
+                                    .showSnackBar(SnackBar(content: Text('Credenciales invalidas')));
+                                    Navigator.push(context,MaterialPageRoute(builder: (context) => Prototipo()),);
+                                }
+                             }
+                          ).catchError((error){print("El error: $error");});
                           // new usuario(_email,_password).login().then().catch() Metodo async
                       // Si es correcto ir a la siguiente pantalla
                       // Si no es correcto mostrar los errores        
@@ -106,14 +132,15 @@ class _FormularioLoginState extends State<FormularioLogin> {
           Material(
               elevation: 5.0,
               borderRadius: BorderRadius.circular(30.0),
-              color: Colors.greenAccent,
+              color: Colors.yellow[600],
               child: MaterialButton(
                   minWidth: MediaQuery.of(context).size.width,
                   padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
                   onPressed: () {
                       // Ir a pantalla registrar
+                       Navigator.push(context,MaterialPageRoute(builder: (context) => Registro()),);
                   },
-                  child: Text('Registrarse',textAlign: TextAlign.center,style: style.copyWith(color: Colors.white, fontWeight: FontWeight.bold),),
+                  child: Text('Registrarse',textAlign: TextAlign.center,style: style.copyWith(color: Colors.black, fontWeight: FontWeight.bold),),
                 )
               
             ),
