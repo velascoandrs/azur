@@ -13,7 +13,7 @@ class TipoInmueble(models.Model):
 
 def user_directory_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
-    return 'user_{0}/{1}'.format(instance.inmueble.usuario.id, filename)
+    return 'user_{0}/{1}/{2}'.format(instance.inmueble.usuario.id, instance.inmueble.predio, filename)
 
 
 #  Imagen

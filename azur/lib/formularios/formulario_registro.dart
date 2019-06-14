@@ -24,6 +24,14 @@ class _FormularioRegistroState extends State<FormularioRegistro> {
   String _password = '';
   List<String> _errores = [];
   int _tipoId = 0;
+  bool existe_correo = false;
+
+  Future validarCorreoApi(String correo) async {
+    var existe = await existeCorreo(correo);
+    setState(() {
+      existe_correo =  existe;
+    });
+  }
 
   Widget campoCedula(){
     return new TextFormField(
@@ -141,6 +149,10 @@ class _FormularioRegistroState extends State<FormularioRegistro> {
                       if(value.isEmpty){
                           return 'Por favor ingrese un número de correo electrónico';
                       }
+                      validarCorreoApi(value);
+                      if(existe_correo){
+                         return 'Ya existe un usuario con ese correo electronico';
+                      }
                     },
                     keyboardType: TextInputType.emailAddress,
 
@@ -206,9 +218,13 @@ class _FormularioRegistroState extends State<FormularioRegistro> {
                     },
                   ),
                   new Container(
-                      padding: const EdgeInsets.only(left: 40.0, top: 20.0),
-                      child: new MaterialButton(
-                        color: Colors.greenAccent,
+                    padding: const EdgeInsets.only(top: 50),
+                    child:
+                    new Material(
+                        borderRadius: BorderRadius.circular(30.0),
+                       color: Colors.black87,
+                       elevation: 5,
+                        child: new MaterialButton(
                         minWidth: MediaQuery.of(context).size.width,
                         padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
                         child: const Text('Registrar'),
@@ -219,36 +235,38 @@ class _FormularioRegistroState extends State<FormularioRegistro> {
                             // Si es valido se mostrar un mensaje
                             Scaffold.of(context)
                               .showSnackBar(SnackBar(content: Text('Procesando datos..')));
-                            _formKey.currentState.save();    
-                            // Llamar al servicio de login 
+                            _formKey.currentState.save();
+                            // Llamar al servicio de login
                             await save(_correo,_password,_telefono,_identificador,_tipoId).then(
                               (resultado){
                                 print(resultado['estado']);
                                 if(resultado['estado']){
                                       Scaffold.of(context).showSnackBar(SnackBar(content: Text('Registrado!!')));
                                       Navigator.push(context,MaterialPageRoute(builder: (context) => Activacion()),);
-                                      
+
                                 }else{
                                     setState(() {
                                       _errores = resultado['errores-list'];
-                                      print(_errores); 
+                                      print(_errores);
                                     });
-                                    
+
                                 }
                               }
                             ).catchError((error){print("El error: $error");});
                           // new usuario(_email,_password).login().then().catch() Metodo async
                       // Si es correcto ir a la siguiente pantalla
-                      // Si no es correcto mostrar los errores        
+                      // Si no es correcto mostrar los errores
                     }
                           // Redirigir a la pantalla de confirmacion
                         },
                       )
                     ),
+    ),
                     new Container(
                       padding: const EdgeInsets.only(top: 20.0),
                       child: _errores.length>0?Avisos(mensajes: _errores,):Container()
                     )
+
                 ],
               )));
   }

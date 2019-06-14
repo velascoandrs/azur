@@ -41,3 +41,7 @@ def publicar_inmueble(request):
 class Upload(generics.ListCreateAPIView):
     serializer_class = InmuebleSerializador
     queryset = Inmueble.objects.all()
+
+
+
+
