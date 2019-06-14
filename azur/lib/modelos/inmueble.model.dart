@@ -19,7 +19,7 @@ class Inmueble{
   double precio;
   int id;
   List<Imagen> inmuebleImagenes;
-  Inmueble({this.titulo,this.precio,this.ubicacion,this.id,this.inmuebleImagenes,this.tipo,this.usuario});
+  Inmueble({this.titulo,this.precio,this.ubicacion,this.id=0,this.inmuebleImagenes,this.tipo,this.usuario});
     // Deserializar el inmueble desde el json
   factory Inmueble.fromJson(Map<String, dynamic> json){
       var listaImg = json['inmuebleImagenes'] as List;

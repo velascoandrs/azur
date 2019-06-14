@@ -1,6 +1,12 @@
+import 'package:azur/modelos/inmueble-model.dart';
+import 'package:azur/modelos/inmueble.model.dart';
+import 'package:azur/servicios/publicacion.service.dart';
+import 'package:azur/utilitarios/session.dart';
 import 'package:azur/widgets/widgets_img_lib.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+
+import '../home.dart';
 
 
 class FormularioCrearPublicacion extends StatefulWidget {
@@ -30,6 +36,39 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
   String _descripcion = "";
   double _precio = 0.00;
   int _tipoInmuebleId = 0;
+
+
+  void _mostrarDialogo(String contenido) {
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Aviso"),
+          content: new Text(contenido),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Continuar"),
+              onPressed: () async{
+                var valor = await getUserCed();
+                //Navigator.of(context).pop();
+                //Navigator.push(context,MaterialPageRoute(builder: (context) => Home(usuario: valor,)),);
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => Home(usuario: valor,)
+                    ),
+                    ModalRoute.withName("/Home")
+                );
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   void _abrirExporadorArchivos() async{
     _rutasImagenes = null;
@@ -271,8 +310,16 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
                   .showSnackBar(SnackBar(content: Text('Procesando información..')));
               _formKey.currentState.save();
               // Llamar al servicio de registrar publicacion
+              var seGuardo = await InmuebleService().crearInmueble(
+                  _predio, _ubicacion, _rutasImg, _titulo,
+                  _precio, _tipoInmuebleId, _descripcion);
+              print("Se guardo: $seGuardo");
+              if(seGuardo){
+                    _mostrarDialogo("Inmueble publicado con exito");
+              }else{
+                    _mostrarDialogo("Ocurrio un problema intentelo más tarde");
+              }
             }
-            // Redirigir a la pantalla de inicio
           },
         )
     );

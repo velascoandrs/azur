@@ -57,7 +57,7 @@ class _InicioState extends State<Inicio> {
 
   _cargarDatos()async{
     startLoader();
-    var publicaciones = await HttpHandler().recuperarInmuebles(pagina_actual);
+    var publicaciones = await InmuebleService().recuperarInmuebles(pagina_actual);
 
     setState((){
       if (publicaciones.length  >0 ){

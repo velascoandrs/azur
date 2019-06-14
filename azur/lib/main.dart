@@ -1,8 +1,13 @@
 import 'package:azur/formularios/formulario_login.dart';
+import 'package:azur/pages/PublicacionCrear.dart';
 import 'package:flutter/material.dart';
 
 void main() {
   runApp(new MaterialApp(
+    routes: <String, WidgetBuilder>{
+      '/publicar_inmueble':(BuildContext context)=> new PublicacionCrear(),
+
+    },
     theme: new ThemeData(
         brightness: Brightness.dark,
         // Define the default Font Family

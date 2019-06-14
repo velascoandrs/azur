@@ -242,7 +242,14 @@ class _FormularioRegistroState extends State<FormularioRegistro> {
                                 print(resultado['estado']);
                                 if(resultado['estado']){
                                       Scaffold.of(context).showSnackBar(SnackBar(content: Text('Registrado!!')));
-                                      Navigator.push(context,MaterialPageRoute(builder: (context) => Activacion()),);
+                                      Navigator.pushAndRemoveUntil(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => Activacion()
+                                          ),
+                                          ModalRoute.withName("/Home")
+                                      );
+                                      //Navigator.push(context,MaterialPageRoute(builder: (context) => Activacion()),);
 
                                 }else{
                                     setState(() {

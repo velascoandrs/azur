@@ -19,7 +19,7 @@ class ListaInmuebles(generics.ListAPIView):
     """
     #  authentication_classes = (authentication.TokenAuthentication,)
     #  permission_classes = (permissions.IsAdminUser,)
-    queryset = Inmueble.objects.all()
+    queryset = Inmueble.objects.all().order_by('-pk')
     serializer_class = InmuebleSerializador
     paginate_by = 10
     filter_class = InmuebleFilter
@@ -40,7 +40,7 @@ def publicar_inmueble(request):
 
 class Upload(generics.ListCreateAPIView):
     serializer_class = InmuebleSerializador
-    queryset = Inmueble.objects.all()
+    queryset = Inmueble.objects.all().order_by('-check_in')
 
 
 

@@ -107,14 +107,14 @@ class _FormularioLoginState extends State<FormularioLogin> {
                                     (valor){
                                         Scaffold.of(context)
                                     .showSnackBar(SnackBar(content: Text('Bienvenido: $valor')));
-                                    Navigator.push(context,MaterialPageRoute(builder: (context) => Prototipo(usuario: valor,)),);  
+                                    Navigator.push(context,MaterialPageRoute(builder: (context) => Home(usuario: valor,)),);
                                     }
                                   );
                                   
                                 }else{
                                   Scaffold.of(context)
                                     .showSnackBar(SnackBar(content: Text('Credenciales invalidas')));
-                                    Navigator.push(context,MaterialPageRoute(builder: (context) => Prototipo()),);
+                                    //Navigator.push(context,MaterialPageRoute(builder: (context) => Home()),);
                                 }
                              }
                           ).catchError((error){print("El error: $error");});
