@@ -1,5 +1,6 @@
 import 'package:azur/formularios/formulario_login.dart';
 import 'package:azur/pages/PublicacionCrear.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -10,6 +11,8 @@ void main() {
     },
     theme: new ThemeData(
         brightness: Brightness.dark,
+        hintColor: Colors.amber,
+        highlightColor: Colors.amber,
         // Define the default Font Family
         fontFamily: 'Montserrat',
         // Define the default TextTheme. Use this to specify the default
