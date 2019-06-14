@@ -1,4 +1,7 @@
+import 'package:azur/home.dart';
+import 'package:azur/pages/registro.usuario.dart';
 import 'package:azur/servicios/usuario.service.dart';
+import 'package:azur/utilitarios/session.dart';
 import 'package:flutter/material.dart';
 
 class FormularioLogin extends StatefulWidget {
@@ -94,9 +97,21 @@ class _FormularioLoginState extends State<FormularioLogin> {
                       _formKey.currentState.save();    
                       // Llamar al servicio de login 
                           await login(_email,_password).then(
-                            (usuario){
-                                Scaffold.of(context)
-                                  .showSnackBar(SnackBar(content: Text('Bienvenido: ${usuario.email}')));
+                            (estato){
+                                if(estato){
+                                  getUserCed().then(
+                                    (valor){
+                                        Scaffold.of(context)
+                                    .showSnackBar(SnackBar(content: Text('Bienvenido: $valor')));
+                                    Navigator.push(context,MaterialPageRoute(builder: (context) => Prototipo(usuario: valor,)),);  
+                                    }
+                                  );
+                                  
+                                }else{
+                                  Scaffold.of(context)
+                                    .showSnackBar(SnackBar(content: Text('Credenciales invalidas')));
+                                    Navigator.push(context,MaterialPageRoute(builder: (context) => Prototipo()),);
+                                }
                              }
                           ).catchError((error){print("El error: $error");});
                           // new usuario(_email,_password).login().then().catch() Metodo async
@@ -119,6 +134,7 @@ class _FormularioLoginState extends State<FormularioLogin> {
                   padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
                   onPressed: () {
                       // Ir a pantalla registrar
+                       Navigator.push(context,MaterialPageRoute(builder: (context) => Registro()),);
                   },
                   child: Text('Registrarse',textAlign: TextAlign.center,style: style.copyWith(color: Colors.white, fontWeight: FontWeight.bold),),
                 )
