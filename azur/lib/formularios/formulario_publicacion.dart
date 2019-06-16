@@ -38,7 +38,24 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
   int _tipoInmuebleId = 0;
 
 
-  void _mostrarDialogo(String contenido) {
+  bool estaSubiendo = false;
+  bool formularioHabilitado = true;
+  bool _seGuardo = false;
+
+  void irInicio()async{
+    var valor = await getUserCed();
+    //Navigator.of(context).pop();
+    //Navigator.push(context,MaterialPageRoute(builder: (context) => Home(usuario: valor,)),);
+    Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+            builder: (context) => Home(usuario: valor,)
+        ),
+        ModalRoute.withName("/Home")
+    );
+  }
+
+  void _mostrarDialogo(String contenido, bool estado) {
     // flutter defined function
     showDialog(
       context: context,
@@ -52,16 +69,15 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
             new FlatButton(
               child: new Text("Continuar"),
               onPressed: () async{
-                var valor = await getUserCed();
-                //Navigator.of(context).pop();
-                //Navigator.push(context,MaterialPageRoute(builder: (context) => Home(usuario: valor,)),);
-                Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => Home(usuario: valor,)
-                    ),
-                    ModalRoute.withName("/Home")
-                );
+
+                if (estado){
+                  irInicio();
+                }
+                setState(() {
+                  estaSubiendo = false;
+                  formularioHabilitado = true;
+                });
+                Navigator.of(context, rootNavigator: true).pop();
               },
             ),
           ],
@@ -79,6 +95,42 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
     });
   }
 
+  Widget vacio(){
+    return SizedBox();
+  }
+
+  Widget animacionCargando(){
+    return _seGuardo==true?exitoGuardar():Container(
+      alignment: Alignment.center,
+      height: 50,
+      width: 50,
+      child: new CircularProgressIndicator(),
+    );
+  }
+
+  Widget exitoGuardar(){
+    return Container(
+      padding: const EdgeInsets.all(10),
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(const Radius.circular(15.0)),
+        color: Colors.yellow[800],
+      ),
+      width: 300,
+      height: 100,
+      child: new Column(
+        children: <Widget>[
+          Text("Publicacion registrada!!!",style: TextStyle(fontSize: 20),),
+          FlatButton(
+            color: Colors.black87,
+            child: Text("Ir a inicio"),
+            onPressed: (){irInicio();},
+          )
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -90,7 +142,7 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
       child: new Form(
         key: _formKey,
         autovalidate: true,
-        child: new ListView(
+        child: _seGuardo?exitoGuardar():new ListView(
           padding: const EdgeInsets.all(16),
           children: <Widget>[
               construir_campo_tipo(),
@@ -101,7 +153,7 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
               construir_campo_precio(),
               construir_campo_imagenes(),
               construir_navegador_archivos(),
-              construir_boton_submit(),
+              formularioHabilitado?construir_boton_submit():animacionCargando(),
           ],
         ),
       ),
@@ -112,6 +164,7 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
   // Construye el campo para la descripcion
   Widget construir_campo_descripcion(){ // ignore: non_constant_identifier_names
     return new  TextFormField(
+      enabled: formularioHabilitado,
       decoration: const InputDecoration(
         icon: const Icon(Icons.description),
         hintText: "Descripción del inmueble",
@@ -136,6 +189,7 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
   // Construye el campo para el numero de predio
   Widget construir_campo_predio(){ // ignore: non_constant_identifier_names
     return new  TextFormField(
+      enabled: formularioHabilitado,
       keyboardType: TextInputType.number,
       decoration: const InputDecoration(
         icon: const Icon(Icons.call_to_action),
@@ -160,6 +214,7 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
   // Construye el campo para el numero de precio
   Widget construir_campo_precio(){ // ignore: non_constant_identifier_names
     return new  TextFormField(
+      enabled: formularioHabilitado,
       keyboardType: TextInputType.number,
       decoration: const InputDecoration(
         icon: const Icon(Icons.attach_money),
@@ -184,6 +239,7 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
   // Construye el campo para el titulo
   Widget construir_campo_titulo(){ // ignore: non_constant_identifier_names
     return new  TextFormField(
+      enabled: formularioHabilitado,
       decoration: const InputDecoration(
         icon: const Icon(Icons.text_fields),
         hintText: "Ingrese el título de la publicación",
@@ -207,6 +263,7 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
   // Construye el campo para la ubicacion
   Widget construir_campo_ubicacion(){ // ignore: non_constant_identifier_names
     return new  TextFormField(
+      enabled: formularioHabilitado,
       decoration: const InputDecoration(
         icon: const Icon(Icons.map),
         hintText: "Ingrese la ubicación del inmueble",
@@ -231,6 +288,7 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
   // Construye el campo para la ubicacion
   Widget construir_campo_tipo(){   // ignore: non_constant_identifier_names
     return new FormField(
+      enabled: formularioHabilitado,
       onSaved: (valor){
         setState(() {
             _tipoInmuebleId = _tiposInmueble.indexOf(valor);
@@ -241,6 +299,7 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
       builder: (FormFieldState state){
         return InputDecorator(
           decoration: InputDecoration(
+            enabled: formularioHabilitado,
             icon: const Icon(Icons.category),
             labelText: 'Tipo de Inmueble',
           ),
@@ -251,6 +310,7 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
               isDense: true,
               onChanged: (String valor){
                 setState(() {
+                  print("El valor es $valor");
                   _nombreTipo = valor;
                   state.didChange(valor);
                 });
@@ -270,16 +330,19 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
 
   Widget construir_campo_imagenes(){   // ignore: non_constant_identifier_names
     return new FormField(
+      enabled: formularioHabilitado,
       onSaved: (valor){
         setState(() {
           _rutasImg = imagenesInmueble;
           print("Rutas img del inmueble es $_rutasImg");
+          print("Size de la lista: ${imagenesInmueble.length}");
 
         });
       },
       builder: (FormFieldState state){
         return InputDecorator(
           decoration: InputDecoration(
+            enabled: formularioHabilitado,
             icon: const Icon(Icons.image),
             labelText: 'Imagenes del inmueble',
             hintText: "Ingrese de 2 a 5 imagenes",
@@ -304,10 +367,26 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
           onPressed: ()async{
             //Llamar al servicio de crear
             // Si el formulario es valido
-            if (_formKey.currentState.validate()) {
-              // Si es valido se mostrar un mensaje
-              Scaffold.of(context)
-                  .showSnackBar(SnackBar(content: Text('Procesando información..')));
+            var formularioValido = true;
+            var erroresExtras = '';
+            if (imagenesInmueble.length >=2 && imagenesInmueble.length <=5){
+              setState(() {
+                formularioValido = true;
+              });
+            }else{
+              erroresExtras += "Debe subir entre 2 o 5 imagenes del inmueble\n";
+              formularioValido = false;
+            }
+            if(_nombreTipo == ''){
+              erroresExtras+="Seleccione un tipo de inmueble\n";
+              formularioValido = false;
+            }
+
+            if (_formKey.currentState.validate() && formularioValido==true) {
+              setState(() {
+                estaSubiendo = true;
+                formularioHabilitado  = false;
+              });
               _formKey.currentState.save();
               // Llamar al servicio de registrar publicacion
               var seGuardo = await InmuebleService().crearInmueble(
@@ -315,10 +394,16 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
                   _precio, _tipoInmuebleId, _descripcion);
               print("Se guardo: $seGuardo");
               if(seGuardo){
-                    _mostrarDialogo("Inmueble publicado con exito");
+                     //_mostrarDialogo("Inmueble publicado con exito",true);
+                     setState(() {
+                       _seGuardo = true;
+                     });
+                      //irInicio();
               }else{
-                    _mostrarDialogo("Ocurrio un problema intentelo más tarde");
+                    _mostrarDialogo("Ocurrio un problema intentelo más tarde",false);
               }
+            }else{
+              _mostrarDialogo("Formulario invalido: \n$erroresExtras", false);
             }
           },
         )
@@ -326,13 +411,13 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
   }
 
   Widget construir_navegador_archivos(){ // ignore: non_constant_identifier_names
-    return new Container(
+    return  new Container(
         child: new Column(
         children: <Widget>[
-        new RaisedButton(
+          formularioHabilitado?new RaisedButton(
           onPressed: ()=>_abrirExporadorArchivos(),
               child: Text("Buscar imagenes"),
-          ),
+          ):vacio(),
           imagenesInmueble!=null?new VisorImagenes(urls: imagenesInmueble,localStorage: true,):new Text("No hay imagenes"),
         ],
       ),

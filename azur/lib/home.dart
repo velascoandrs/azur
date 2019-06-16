@@ -65,7 +65,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin{
    return new Container(
      child: new Scaffold(
        appBar: new AppBar(
-         title: new Text("Inmobiliaria"),
+         title: new Text("AZUR"),
        ),
        drawer: new Drawer(
          child: _getDrawer(context),

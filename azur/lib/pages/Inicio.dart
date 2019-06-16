@@ -115,7 +115,7 @@ class _InicioState extends State<Inicio> {
   @override
   Widget build(BuildContext context) {
    return new Scaffold(
-     appBar: new AppBar(title: Text("AZUR"),),
+     appBar: new AppBar(title: Text("Anuncios"),),
      body: new Stack(
        children: <Widget>[
            construirLista(),
