@@ -46,6 +46,7 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True, null=False, blank=False, db_index=True)
+    codigo = models.CharField(max_length=7, unique=True, db_index=True, null=False, blank=False)
     cedulaRuc = models.CharField(max_length=13, unique=True, db_index=True, null=False, blank=False)
     telefono = models.CharField(max_length=20, unique=True, null=False, blank=False, db_index=True)
     date_joined = models.DateTimeField(auto_now_add=True)

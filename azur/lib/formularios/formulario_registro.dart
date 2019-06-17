@@ -25,6 +25,7 @@ class _FormularioRegistroState extends State<FormularioRegistro> {
   List<String> _errores = [];
   int _tipoId = 0;
   bool existe_correo = false;
+  bool formulario_habilitado = true;
 
   Future validarCorreoApi(String correo) async {
     var existe = await existeCorreo(correo);
@@ -35,6 +36,7 @@ class _FormularioRegistroState extends State<FormularioRegistro> {
 
   Widget campoCedula(){
     return new TextFormField(
+      enabled: formulario_habilitado,
                     decoration: const InputDecoration(
                       icon: const Icon(Icons.person),
                       hintText: 'Cedula',
@@ -58,6 +60,7 @@ class _FormularioRegistroState extends State<FormularioRegistro> {
 
   Widget campoRuc(){
     return new TextFormField(
+      enabled: formulario_habilitado,
                     decoration: const InputDecoration(
                       icon: const Icon(Icons.person),
                       hintText: 'RUC',
@@ -79,8 +82,9 @@ class _FormularioRegistroState extends State<FormularioRegistro> {
                   );
   }
 
-    Widget campoPasaporte(){
+  Widget campoPasaporte(){
     return new TextFormField(
+      enabled: formulario_habilitado,
                     decoration: const InputDecoration(
                       icon: const Icon(Icons.person),
                       hintText: 'Pasaporte',
@@ -118,6 +122,7 @@ class _FormularioRegistroState extends State<FormularioRegistro> {
                 children: <Widget>[
                   
                   new TextFormField( // TextField para el telefono celular
+                    enabled: formulario_habilitado,
                     decoration: const InputDecoration(
                       icon: const Icon(Icons.phone),
                       hintText: 'Ingresa un número de teléfono celular',
@@ -140,6 +145,7 @@ class _FormularioRegistroState extends State<FormularioRegistro> {
                     ],
                   ),
                   new TextFormField(
+                    enabled: formulario_habilitado,
                     decoration: const InputDecoration(
                       icon: const Icon(Icons.email),
                       hintText: 'Ingresa una dirección de correo electrónico',
@@ -149,10 +155,14 @@ class _FormularioRegistroState extends State<FormularioRegistro> {
                       if(value.isEmpty){
                           return 'Por favor ingrese un número de correo electrónico';
                       }
-                      validarCorreoApi(value);
-                      if(existe_correo){
-                         return 'Ya existe un usuario con ese correo electronico';
+                      print("El valor de la valiacion $formulario_habilitado");
+                      if(formulario_habilitado==true){
+                        validarCorreoApi(value);
+                        if(existe_correo){
+                          return 'Ya existe un usuario con ese correo electronico';
+                        }
                       }
+
                     },
                     keyboardType: TextInputType.emailAddress,
 
@@ -163,6 +173,7 @@ class _FormularioRegistroState extends State<FormularioRegistro> {
                             },
                   ),
                   new FormField(
+                    enabled: formulario_habilitado,
                     onSaved: (valor){
                         setState(() {
                           _tipo = valor; 
@@ -199,6 +210,7 @@ class _FormularioRegistroState extends State<FormularioRegistro> {
                     },
                   ),_tipoId==1?campoCedula():_tipoId==2?campoRuc():_tipoId==3?campoPasaporte():new Container(),
                   new TextFormField(
+                    enabled: formulario_habilitado,
                     obscureText: true,
                     decoration: const InputDecoration(
                       icon: const Icon(Icons.security),
@@ -232,6 +244,9 @@ class _FormularioRegistroState extends State<FormularioRegistro> {
                           //Llamar al servicio de crear
                           // Si el formulario es valido
                           if (_formKey.currentState.validate()) {
+                            setState(() {
+                              formulario_habilitado = false;
+                            });
                             // Si es valido se mostrar un mensaje
                             Scaffold.of(context)
                               .showSnackBar(SnackBar(content: Text('Procesando datos..')));

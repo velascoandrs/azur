@@ -56,6 +56,16 @@ Future<bool>subir_publicacion(List<String> paths, ) async {
   */
 class InmuebleService{
 
+  Future<bool> existePredio(String predio) async{
+    final response = await http.get(
+      'http://$dominio/inmuebles/api/v1/ex_predio/$predio',
+    );
+    if(response.statusCode==404){
+      return false;
+    }
+    return true;
+  }
+
   Future<dynamic> getJson(Uri uri)async{
     http.Response response = await http.get(uri);
     if(response.statusCode == 404){
@@ -101,7 +111,7 @@ class InmuebleService{
 
       int indice = 0;
       for(String path in rutasImg){
-        request.files.add(new http.MultipartFile.fromBytes('file$indice', File(path).readAsBytesSync(), contentType: new MediaType('image', 'jpeg'),filename: "fachada"));
+        request.files.add(new http.MultipartFile.fromBytes('file$indice', File(path).readAsBytesSync(), contentType: new MediaType('image', 'jpeg'),filename: "fto"));
         indice++;
       }
 
