@@ -43,7 +43,9 @@ class _FormularioLoginState extends State<FormularioLogin> {
               labelStyle: TextStyle(color: Colors.black,fontSize: 20,fontWeight: FontWeight.bold),
               hintText:'email',
               border: OutlineInputBorder(borderSide: BorderSide(color: Colors.black, style: BorderStyle.solid),borderRadius: BorderRadius.circular(32.0)),
-              filled: true,
+              focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.black, style: BorderStyle.solid)),
+
+               filled: true,
               fillColor: Colors.black38
              ),
            validator: (value){
@@ -64,9 +66,11 @@ class _FormularioLoginState extends State<FormularioLogin> {
            
            obscureText: true,
            decoration: InputDecoration(
-                labelText: "Password",
-                hintText:'clave',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
+                labelText: "Contraseña",
+                labelStyle: TextStyle(color: Colors.black,fontSize: 20,fontWeight: FontWeight.bold),
+                hintText:'contraseña',
+                border: OutlineInputBorder(borderSide: BorderSide(color: Colors.black, style: BorderStyle.solid),borderRadius: BorderRadius.circular(32.0)),
+                focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.black, style: BorderStyle.solid)),
                 filled: true,
                 fillColor: Colors.black38,
 
@@ -107,14 +111,14 @@ class _FormularioLoginState extends State<FormularioLogin> {
                                     (valor){
                                         Scaffold.of(context)
                                     .showSnackBar(SnackBar(content: Text('Bienvenido: $valor')));
-                                    Navigator.push(context,MaterialPageRoute(builder: (context) => Prototipo(usuario: valor,)),);  
+                                    Navigator.push(context,MaterialPageRoute(builder: (context) => Home(usuario: valor,)),);
                                     }
                                   );
                                   
                                 }else{
                                   Scaffold.of(context)
                                     .showSnackBar(SnackBar(content: Text('Credenciales invalidas')));
-                                    Navigator.push(context,MaterialPageRoute(builder: (context) => Prototipo()),);
+                                    //Navigator.push(context,MaterialPageRoute(builder: (context) => Home()),);
                                 }
                              }
                           ).catchError((error){print("El error: $error");});

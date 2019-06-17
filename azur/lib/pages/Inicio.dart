@@ -57,9 +57,10 @@ class _InicioState extends State<Inicio> {
 
   _cargarDatos()async{
     startLoader();
-    var publicaciones = await HttpHandler().recuperarInmuebles(pagina_actual);
+    var publicaciones = await InmuebleService().recuperarInmuebles(pagina_actual);
 
     setState((){
+      print("TOTAL CARGADAS:  ${publicaciones.length}");
       if (publicaciones.length  >0 ){
         inmuebles.addAll(publicaciones);
         if(inmuebles.length>0){
@@ -114,7 +115,7 @@ class _InicioState extends State<Inicio> {
   @override
   Widget build(BuildContext context) {
    return new Scaffold(
-     appBar: new AppBar(title: Text("AZUR"),),
+     appBar: new AppBar(title: Text("Anuncios"),),
      body: new Stack(
        children: <Widget>[
            construirLista(),
@@ -129,7 +130,8 @@ class _InicioState extends State<Inicio> {
      margin: const EdgeInsets.all(10),
      child: new ListView.builder(
        controller: controller,
-       itemBuilder: (_,i)=>new PublicacionItem(inmueble: inmuebles[i],),
+       //itemBuilder: (_,i)=>new PublicacionItem(inmueble: inmuebles[i],),
+       itemBuilder: (_,i)=>new InmuebleItem(inmueble: inmuebles[i],),
        itemCount: inmuebles.length,
      ),
    );
