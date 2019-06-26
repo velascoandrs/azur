@@ -1,18 +1,19 @@
 import 'package:azur/pages/Busqueda.dart';
 import 'package:azur/pages/Inicio.dart';
 import 'package:azur/pages/PublicacionCrear.dart';
+import 'package:azur/utilitarios/session.dart';
 import 'package:flutter/material.dart';
 
 
-class Prototipo extends StatefulWidget {
+class Home extends StatefulWidget {
 
   String usuario;
-  Prototipo({this.usuario});
+  Home({this.usuario});
 
   @override
-  _PrototipoState createState() => new _PrototipoState();
+  _HomeState createState() => new _HomeState();
  }
-class _PrototipoState extends State<Prototipo> with SingleTickerProviderStateMixin{
+class _HomeState extends State<Home> with SingleTickerProviderStateMixin{
 
    Drawer _getDrawer(BuildContext context){
 
@@ -37,12 +38,28 @@ class _PrototipoState extends State<Prototipo> with SingleTickerProviderStateMix
         },
       );
     }
+
+      ListTile _cerrarSession(Icon icon){
+        return new ListTile(
+          leading: icon,
+          title: new Text("Cerrar Sesion"),
+          onTap: (){
+            cerrarSession();
+            setState(() {
+              Navigator.of(context).pushNamed("/");
+            });
+          },
+        );
+      }
+
+    //cerrarSession
     ListView _listView = new ListView(children: <Widget>[
       header,
       info,
       //_getItem(new Icon(Icons.people),widget.usuario , ''),
       _getItem(new Icon(Icons.person), "Perfil", "/configuracion"),
-      _getItem(new Icon(Icons.exit_to_app), "Cerrar Sesion", "/"),
+      _cerrarSession(new Icon(Icons.exit_to_app)),
+      _getItem(new Icon(Icons.add_circle_outline), "Publicar Inmueble", "/publicar_inmueble")
 
     ],);
 
@@ -56,7 +73,7 @@ class _PrototipoState extends State<Prototipo> with SingleTickerProviderStateMix
   @override
   void initState(){
     super.initState();
-    controladorTap = new TabController(length: 3, vsync: this); 
+    controladorTap = new TabController(length: 2, vsync: this);
   }
 
   @override
@@ -64,7 +81,7 @@ class _PrototipoState extends State<Prototipo> with SingleTickerProviderStateMix
    return new Container(
      child: new Scaffold(
        appBar: new AppBar(
-         title: new Text("Inmobiliaria"),
+         title: new Text("AZUR"),
        ),
        drawer: new Drawer(
          child: _getDrawer(context),
@@ -78,9 +95,6 @@ class _PrototipoState extends State<Prototipo> with SingleTickerProviderStateMix
                icon: new Icon(Icons.home),
              ),
              new Tab(
-               icon: new Icon(Icons.create),
-             ),
-             new Tab(
                icon: new Icon(Icons.search),
              ),
            ],
@@ -91,7 +105,6 @@ class _PrototipoState extends State<Prototipo> with SingleTickerProviderStateMix
          controller: controladorTap,
          children: <Widget>[
            new Inicio(),
-           new PublicacionCrear(),
            new Busqueda(),
          ],
        ),

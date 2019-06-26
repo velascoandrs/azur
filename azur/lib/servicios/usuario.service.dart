@@ -75,6 +75,16 @@ Future <Usuario> obtenerDatosUsuario(String token)async{
   return Usuario(responseJson);
 }
 
+Future<bool> existeCorreo(String correo) async{
+  final response = await http.get(
+    'http://$dominio/usuarios/api/v1/ex_correo/$correo',
+  );
+  if(response.statusCode==404){
+    return false;
+  }
+  return true;
+}
+
 
 // Refrescar la session del usuario
 refrescarToken(String refreshToken) async{

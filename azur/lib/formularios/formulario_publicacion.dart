@@ -1,6 +1,11 @@
+import 'package:azur/modelos/inmueble.model.dart';
+import 'package:azur/servicios/publicacion.service.dart';
+import 'package:azur/servicios/usuario.service.dart';
+import 'package:azur/utilitarios/session.dart';
 import 'package:azur/widgets/widgets_img_lib.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import '../home.dart';
 
 
 class FormularioCrearPublicacion extends StatefulWidget {
@@ -31,6 +36,65 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
   double _precio = 0.00;
   int _tipoInmuebleId = 0;
 
+
+  bool estaSubiendo = false;
+  bool formularioHabilitado = true;
+  bool _seGuardo = false;
+  bool _existePredio = false;
+  RegExp numeroRegex = RegExp(r'([1234567890]$)');
+
+
+  Future validarExistePredio(String correo) async {
+    var resultado = await InmuebleService().existePredio(correo);
+    setState(() {
+      _existePredio = resultado;
+    });
+  }
+
+  void irInicio()async{
+    var valor = await getUserCed();
+    //Navigator.of(context).pop();
+    //Navigator.push(context,MaterialPageRoute(builder: (context) => Home(usuario: valor,)),);
+    Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+            builder: (context) => Home(usuario: valor,)
+        ),
+        ModalRoute.withName("/Home")
+    );
+  }
+
+  void _mostrarDialogo(String contenido, bool estado) {
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Aviso"),
+          content: new Text(contenido),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Continuar"),
+              onPressed: () async{
+
+                if (estado){
+                  irInicio();
+                }
+                setState(() {
+                  estaSubiendo = false;
+                  formularioHabilitado = true;
+                });
+                Navigator.of(context, rootNavigator: true).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _abrirExporadorArchivos() async{
     _rutasImagenes = null;
     _rutasImagenes = await FilePicker.getMultiFilePath(type: FileType.IMAGE );
@@ -38,6 +102,42 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
     setState(() {
       imagenesInmueble = _rutasImagenes.values.toList();
     });
+  }
+
+  Widget vacio(){
+    return SizedBox();
+  }
+
+  Widget animacionCargando(){
+    return _seGuardo==true?exitoGuardar():Container(
+      alignment: Alignment.center,
+      height: 50,
+      width: 50,
+      child: new CircularProgressIndicator(),
+    );
+  }
+
+  Widget exitoGuardar(){
+    return Container(
+      padding: const EdgeInsets.all(10),
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(const Radius.circular(15.0)),
+        color: Colors.yellow[800],
+      ),
+      width: 300,
+      height: 100,
+      child: new Column(
+        children: <Widget>[
+          Text("Publicacion registrada!!!",style: TextStyle(fontSize: 20),),
+          FlatButton(
+            color: Colors.black87,
+            child: Text("Ir a inicio"),
+            onPressed: (){irInicio();},
+          )
+        ],
+      ),
+    );
   }
 
   @override
@@ -51,7 +151,7 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
       child: new Form(
         key: _formKey,
         autovalidate: true,
-        child: new ListView(
+        child: _seGuardo?exitoGuardar():new ListView(
           padding: const EdgeInsets.all(16),
           children: <Widget>[
               construir_campo_tipo(),
@@ -62,7 +162,7 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
               construir_campo_precio(),
               construir_campo_imagenes(),
               construir_navegador_archivos(),
-              construir_boton_submit(),
+              formularioHabilitado?construir_boton_submit():animacionCargando(),
           ],
         ),
       ),
@@ -73,6 +173,7 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
   // Construye el campo para la descripcion
   Widget construir_campo_descripcion(){ // ignore: non_constant_identifier_names
     return new  TextFormField(
+      enabled: formularioHabilitado,
       decoration: const InputDecoration(
         icon: const Icon(Icons.description),
         hintText: "Descripción del inmueble",
@@ -97,7 +198,8 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
   // Construye el campo para el numero de predio
   Widget construir_campo_predio(){ // ignore: non_constant_identifier_names
     return new  TextFormField(
-      keyboardType: TextInputType.number,
+      enabled: formularioHabilitado,
+      keyboardType: TextInputType.numberWithOptions(decimal: false,signed: false),
       decoration: const InputDecoration(
         icon: const Icon(Icons.call_to_action),
         hintText: "Ingrese el predio del inmueble",
@@ -106,6 +208,13 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
       validator: (String valor){
         if(valor.isEmpty){
           return 'Por favor ingrese un predio';
+        }
+        if(!numeroRegex.hasMatch(valor)){
+          return "Ingresa un numero entero";
+        }
+        validarExistePredio(valor);
+        if(_existePredio){
+            return "Ya existe un inmueble con ese predio";
         }
         // Llamar al servicio para consultar si el predio existe
       },
@@ -121,6 +230,7 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
   // Construye el campo para el numero de precio
   Widget construir_campo_precio(){ // ignore: non_constant_identifier_names
     return new  TextFormField(
+      enabled: formularioHabilitado,
       keyboardType: TextInputType.number,
       decoration: const InputDecoration(
         icon: const Icon(Icons.attach_money),
@@ -130,6 +240,9 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
       validator: (String valor){
         if(valor.isEmpty){
           return 'Por favor ingrese un precio';
+        }
+        if(!numeroRegex.hasMatch(valor)){
+          return "Ingresa un numero entero";
         }
         // Llamar al servicio para consultar si el predio existe
       },
@@ -145,6 +258,7 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
   // Construye el campo para el titulo
   Widget construir_campo_titulo(){ // ignore: non_constant_identifier_names
     return new  TextFormField(
+      enabled: formularioHabilitado,
       decoration: const InputDecoration(
         icon: const Icon(Icons.text_fields),
         hintText: "Ingrese el título de la publicación",
@@ -168,6 +282,7 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
   // Construye el campo para la ubicacion
   Widget construir_campo_ubicacion(){ // ignore: non_constant_identifier_names
     return new  TextFormField(
+      enabled: formularioHabilitado,
       decoration: const InputDecoration(
         icon: const Icon(Icons.map),
         hintText: "Ingrese la ubicación del inmueble",
@@ -183,7 +298,6 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
         setState(() {
           _ubicacion = valor;
           print("El ubicación ingresado es $_ubicacion");
-
         });
       },
     );
@@ -192,6 +306,7 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
   // Construye el campo para la ubicacion
   Widget construir_campo_tipo(){   // ignore: non_constant_identifier_names
     return new FormField(
+      enabled: formularioHabilitado,
       onSaved: (valor){
         setState(() {
             _tipoInmuebleId = _tiposInmueble.indexOf(valor);
@@ -202,6 +317,7 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
       builder: (FormFieldState state){
         return InputDecorator(
           decoration: InputDecoration(
+            enabled: formularioHabilitado,
             icon: const Icon(Icons.category),
             labelText: 'Tipo de Inmueble',
           ),
@@ -212,6 +328,7 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
               isDense: true,
               onChanged: (String valor){
                 setState(() {
+                  print("El valor es $valor");
                   _nombreTipo = valor;
                   state.didChange(valor);
                 });
@@ -231,16 +348,19 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
 
   Widget construir_campo_imagenes(){   // ignore: non_constant_identifier_names
     return new FormField(
+      enabled: formularioHabilitado,
       onSaved: (valor){
         setState(() {
           _rutasImg = imagenesInmueble;
           print("Rutas img del inmueble es $_rutasImg");
+          print("Size de la lista: ${imagenesInmueble.length}");
 
         });
       },
       builder: (FormFieldState state){
         return InputDecorator(
           decoration: InputDecoration(
+            enabled: formularioHabilitado,
             icon: const Icon(Icons.image),
             labelText: 'Imagenes del inmueble',
             hintText: "Ingrese de 2 a 5 imagenes",
@@ -265,27 +385,57 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
           onPressed: ()async{
             //Llamar al servicio de crear
             // Si el formulario es valido
-            if (_formKey.currentState.validate()) {
-              // Si es valido se mostrar un mensaje
-              Scaffold.of(context)
-                  .showSnackBar(SnackBar(content: Text('Procesando información..')));
+            var formularioValido = true;
+            var erroresExtras = '';
+            if (imagenesInmueble!=null && imagenesInmueble.length >=2 && imagenesInmueble.length <=5){
+              setState(() {
+                formularioValido = true;
+              });
+            }else{
+              erroresExtras += "Debe subir entre 2 o 5 imagenes del inmueble\n";
+              formularioValido = false;
+            }
+            if(_nombreTipo == ''){
+              erroresExtras+="Seleccione un tipo de inmueble\n";
+              formularioValido = false;
+            }
+
+            if (_formKey.currentState.validate() && formularioValido==true) {
+              setState(() {
+                estaSubiendo = true;
+                formularioHabilitado  = false;
+              });
               _formKey.currentState.save();
               // Llamar al servicio de registrar publicacion
+              var seGuardo = await InmuebleService().crearInmueble(
+                  _predio, _ubicacion, _rutasImg, _titulo,
+                  _precio, _tipoInmuebleId, _descripcion);
+              print("Se guardo: $seGuardo");
+              if(seGuardo){
+                     //_mostrarDialogo("Inmueble publicado con exito",true);
+                     setState(() {
+                       _seGuardo = true;
+                     });
+                      //irInicio();
+              }else{
+                    _mostrarDialogo("Ocurrio un problema intentelo más tarde",false);
+              }
+            }else{
+              _mostrarDialogo("Formulario invalido: \n$erroresExtras", false);
             }
-            // Redirigir a la pantalla de inicio
           },
         )
     );
   }
 
   Widget construir_navegador_archivos(){ // ignore: non_constant_identifier_names
-    return new Container(
+    return  new Container(
         child: new Column(
         children: <Widget>[
-        new RaisedButton(
+          formularioHabilitado?new RaisedButton(
           onPressed: ()=>_abrirExporadorArchivos(),
               child: Text("Buscar imagenes"),
-          ),
+          ):vacio(),
           imagenesInmueble!=null?new VisorImagenes(urls: imagenesInmueble,localStorage: true,):new Text("No hay imagenes"),
         ],
       ),

@@ -1,4 +1,5 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
+from django.shortcuts import get_object_or_404
 from rest_framework import authentication, permissions, generics, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -19,7 +20,7 @@ class ListaInmuebles(generics.ListAPIView):
     """
     #  authentication_classes = (authentication.TokenAuthentication,)
     #  permission_classes = (permissions.IsAdminUser,)
-    queryset = Inmueble.objects.all()
+    queryset = Inmueble.objects.all().order_by('-pk')
     serializer_class = InmuebleSerializador
     paginate_by = 10
     filter_class = InmuebleFilter
@@ -40,4 +41,9 @@ def publicar_inmueble(request):
 
 class Upload(generics.ListCreateAPIView):
     serializer_class = InmuebleSerializador
-    queryset = Inmueble.objects.all()
+    queryset = Inmueble.objects.all().order_by('-check_in')
+
+
+def existe_predio(request, predio):
+    get_object_or_404(Inmueble, predio=int(predio))
+    return HttpResponse(request, "Existe el usuario")

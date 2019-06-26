@@ -24,6 +24,7 @@ class InmuebleSerializador(serializers.ModelSerializer):
         inmueble = Inmueble.objects.create(**validated_data)
         for datos_imagen in inmuebleImagenes_data.values():
             print(datos_imagen)
+            # Llamar al metodo con marca de agua
             #ruta_imagen = handle_uploaded_file(datos_imagen, inmueble.usuario)
             Imagen.objects.create(inmueble=inmueble, imagen=datos_imagen)
         return inmueble
