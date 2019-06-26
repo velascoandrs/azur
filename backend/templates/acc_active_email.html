@@ -1,5 +1,11 @@
-{% autoescape off %}
-Hola {{ user.email }},
-Su codigo de activacion:
-{{ uid }}
-{% endautoescape %}
+<html lang="es">
+    <head>
+        <title></title>
+    </head>
+    <body>
+            Hola {{ user.email }},
+            <p>Su codigo de activacion:</p>
+            <h1>{{ codigo }}</h1>
+    </body>
+</html>
+

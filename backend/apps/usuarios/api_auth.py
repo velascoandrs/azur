@@ -32,8 +32,9 @@ def create_user(request):
     serialized = UserSerializer(data=request.data)
     if serialized.is_valid():
         serialized.save()
+        print("Estoy aqui")
         # Llamar al metodo para enviar email
-        enviar_email(request, serialized.data.get('id'), serialized.data.get('cedulaRuc'), serialized.data.get('email'))
+        enviar_email(request, serialized.data.get('id'))
         return JsonResponse({'mensaje':serialized.data}, status=status.HTTP_201_CREATED)
     else:
         return JsonResponse({'mensaje': serialized._errors}, status=status.HTTP_400_BAD_REQUEST)

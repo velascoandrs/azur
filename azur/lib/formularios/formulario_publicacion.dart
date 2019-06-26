@@ -1,11 +1,10 @@
-import 'package:azur/modelos/inmueble-model.dart';
 import 'package:azur/modelos/inmueble.model.dart';
 import 'package:azur/servicios/publicacion.service.dart';
+import 'package:azur/servicios/usuario.service.dart';
 import 'package:azur/utilitarios/session.dart';
 import 'package:azur/widgets/widgets_img_lib.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
-
 import '../home.dart';
 
 
@@ -41,6 +40,16 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
   bool estaSubiendo = false;
   bool formularioHabilitado = true;
   bool _seGuardo = false;
+  bool _existePredio = false;
+  RegExp numeroRegex = RegExp(r'([1234567890]$)');
+
+
+  Future validarExistePredio(String correo) async {
+    var resultado = await InmuebleService().existePredio(correo);
+    setState(() {
+      _existePredio = resultado;
+    });
+  }
 
   void irInicio()async{
     var valor = await getUserCed();
@@ -190,7 +199,7 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
   Widget construir_campo_predio(){ // ignore: non_constant_identifier_names
     return new  TextFormField(
       enabled: formularioHabilitado,
-      keyboardType: TextInputType.number,
+      keyboardType: TextInputType.numberWithOptions(decimal: false,signed: false),
       decoration: const InputDecoration(
         icon: const Icon(Icons.call_to_action),
         hintText: "Ingrese el predio del inmueble",
@@ -199,6 +208,13 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
       validator: (String valor){
         if(valor.isEmpty){
           return 'Por favor ingrese un predio';
+        }
+        if(!numeroRegex.hasMatch(valor)){
+          return "Ingresa un numero entero";
+        }
+        validarExistePredio(valor);
+        if(_existePredio){
+            return "Ya existe un inmueble con ese predio";
         }
         // Llamar al servicio para consultar si el predio existe
       },
@@ -224,6 +240,9 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
       validator: (String valor){
         if(valor.isEmpty){
           return 'Por favor ingrese un precio';
+        }
+        if(!numeroRegex.hasMatch(valor)){
+          return "Ingresa un numero entero";
         }
         // Llamar al servicio para consultar si el predio existe
       },
@@ -279,7 +298,6 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
         setState(() {
           _ubicacion = valor;
           print("El ubicación ingresado es $_ubicacion");
-
         });
       },
     );
@@ -369,7 +387,7 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
             // Si el formulario es valido
             var formularioValido = true;
             var erroresExtras = '';
-            if (imagenesInmueble.length >=2 && imagenesInmueble.length <=5){
+            if (imagenesInmueble!=null && imagenesInmueble.length >=2 && imagenesInmueble.length <=5){
               setState(() {
                 formularioValido = true;
               });

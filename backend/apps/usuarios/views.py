@@ -8,10 +8,9 @@ from django.views.decorators.csrf import csrf_exempt
 
 #  Activar usuario
 @csrf_exempt
-def activate(request, uidb64):
+def activate(request, codigo):
     try:
-        uid = force_text(urlsafe_base64_decode(uidb64))
-        user = get_user_model().objects.get(cedulaRuc=int(uid))
+        user = get_user_model().objects.get(codigo=codigo)
         user.is_active = True
         user.save()
         return JsonResponse({'estado': True}, status=201)

@@ -1,6 +1,7 @@
 import 'package:azur/pages/Busqueda.dart';
 import 'package:azur/pages/Inicio.dart';
 import 'package:azur/pages/PublicacionCrear.dart';
+import 'package:azur/utilitarios/session.dart';
 import 'package:flutter/material.dart';
 
 
@@ -37,12 +38,27 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin{
         },
       );
     }
+
+      ListTile _cerrarSession(Icon icon){
+        return new ListTile(
+          leading: icon,
+          title: new Text("Cerrar Sesion"),
+          onTap: (){
+            cerrarSession();
+            setState(() {
+              Navigator.of(context).pushNamed("/");
+            });
+          },
+        );
+      }
+
+    //cerrarSession
     ListView _listView = new ListView(children: <Widget>[
       header,
       info,
       //_getItem(new Icon(Icons.people),widget.usuario , ''),
       _getItem(new Icon(Icons.person), "Perfil", "/configuracion"),
-      _getItem(new Icon(Icons.exit_to_app), "Cerrar Sesion", "/"),
+      _cerrarSession(new Icon(Icons.exit_to_app)),
       _getItem(new Icon(Icons.add_circle_outline), "Publicar Inmueble", "/publicar_inmueble")
 
     ],);

@@ -1,4 +1,5 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
+from django.shortcuts import get_object_or_404
 from rest_framework import authentication, permissions, generics, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -43,5 +44,6 @@ class Upload(generics.ListCreateAPIView):
     queryset = Inmueble.objects.all().order_by('-check_in')
 
 
-
-
+def existe_predio(request, predio):
+    get_object_or_404(Inmueble, predio=int(predio))
+    return HttpResponse(request, "Existe el usuario")
