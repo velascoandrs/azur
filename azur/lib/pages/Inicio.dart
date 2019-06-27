@@ -45,16 +45,23 @@ class _InicioState extends State<Inicio> {
   int pagina_actual = 1;
   List<Inmueble> inmuebles = new List();
   GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
-  
+  // ignore: non_constant_identifier_names
+  int idUsuario = 0;
 
   @override
   void initState(){
+    setState(() {
+      _obtenerUsuario();
+    });
     super.initState();
     controller = new ScrollController()..addListener(_scrollListener);
     //_All.addAll(generateWordPairs().take(20));
     _cargarDatos();
   }
 
+  _obtenerUsuario()async{
+    this.idUsuario = await getUserId();
+  }
   _cargarDatos()async{
     startLoader();
     var publicaciones = await InmuebleService().recuperarInmuebles(pagina_actual);
@@ -131,7 +138,7 @@ class _InicioState extends State<Inicio> {
      child: new ListView.builder(
        controller: controller,
        //itemBuilder: (_,i)=>new PublicacionItem(inmueble: inmuebles[i],),
-       itemBuilder: (_,i)=>new InmuebleItem(inmueble: inmuebles[i],),
+       itemBuilder: (_,i)=>new InmuebleItem(inmueble: inmuebles[i],idUsuario: this.idUsuario,),
        itemCount: inmuebles.length,
      ),
    );

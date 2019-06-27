@@ -9,7 +9,7 @@ guardarSession(Session session)async{
       prefs.clear();
       prefs.setString('token',session.token);
       prefs.setString('retoken',session.refreshToken);
-      prefs.setString('usuario_id',session.usuario.id);
+      prefs.setInt('usuario_id',session.usuario.id);
       prefs.setString('usuario_ced', session.usuario.cedulaRuc);
 }
 
@@ -24,9 +24,9 @@ cerrarSession()async{
 
 
 // Obtener el id del usuario
-Future<String> getUserId()async{
+Future<int> getUserId()async{
   final SharedPreferences prefs = await SharedPreferences.getInstance();
-  return prefs.getString('usuario_id') ?? '';
+  return prefs.getInt('usuario_id') ?? '';
 }
 
 

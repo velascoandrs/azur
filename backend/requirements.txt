@@ -1,0 +1,10 @@
+Django==2.2.2
+django-filter==2.1.0
+djangorestframework==3.9.4
+djangorestframework-simplejwt==4.3.0
+Pillow==6.0.0
+PyJWT==1.7.1
+pytz==2019.1
+simplejwt==2.0.1
+sqlparse==0.3.0
+typing==3.7.4

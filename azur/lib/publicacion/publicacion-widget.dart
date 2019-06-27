@@ -54,7 +54,9 @@ class PublicacionItem extends StatelessWidget {
 class InmuebleItem extends StatefulWidget{
 
   final Inmueble inmueble;
-  InmuebleItem({this.inmueble});
+  final int idUsuario;
+
+  InmuebleItem({this.inmueble,this.idUsuario});
 
 
   @override
@@ -109,8 +111,23 @@ class _InmuebleItemState extends State<InmuebleItem>{
                     subtitle: new Text(widget.inmueble.titulo, style: new TextStyle(color: Colors.white,fontWeight: FontWeight.bold)),
                   ),
                 ),
-                new RaisedButton(
-                  child: new Text("Información",style: new TextStyle(color: Colors.white,fontWeight: FontWeight.bold)),
+                widget.idUsuario == widget.inmueble.usuario?
+                new IconButton(
+                  icon: new Icon(Icons.delete),
+                  tooltip: 'Eliminar publicación',
+                  onPressed: (){},
+                  color: Colors.redAccent,
+                ):new SizedBox(),
+                widget.idUsuario == widget.inmueble.usuario?
+                new IconButton(
+                  icon: new Icon(Icons.create),
+                  tooltip: 'Actualizar publicación',
+                  onPressed: (){},
+                  color: Colors.blue,
+                ):new SizedBox(),
+                new IconButton(
+                  icon: new Icon(Icons.info),
+                  tooltip: 'Ver inmueble',
                   onPressed: (){},
                   color: Colors.amber,
                 )

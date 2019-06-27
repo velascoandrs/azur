@@ -96,7 +96,7 @@ class InmuebleService{
       int predio, String ubicacion,
       List<String> rutasImg, String titulo,
       double precio, int tipoInmueble,
-      String descripcion)async{
+      String descripcion) async {
 
       var postUri = Uri.parse("http://$dominio/inmuebles/api/v1/inmuebles/post");
       var request = new http.MultipartRequest("POST", postUri);
@@ -106,9 +106,11 @@ class InmuebleService{
       request.fields['precio'] = precio.toString();
       request.fields['tipo'] = tipoInmueble.toString();
       request.fields['descripcion'] = descripcion;
-      request.fields['usuario']= await getUserId();
-      print(request.fields['usuario']);
+      //request.fields['usuario']= await getUserId();
+      int usuario = await getUserId();
+      request.fields['usuario'] = usuario.toString();
 
+      print(request.fields['usuario']);
       int indice = 0;
       for(String path in rutasImg){
         request.files.add(new http.MultipartFile.fromBytes('file$indice', File(path).readAsBytesSync(), contentType: new MediaType('image', 'jpeg'),filename: "fto"));
