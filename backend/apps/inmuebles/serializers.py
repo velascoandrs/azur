@@ -25,12 +25,11 @@ class InmuebleSerializador(serializers.ModelSerializer):
         for datos_imagen in inmuebleImagenes_data.values():
             print(datos_imagen)
             # Llamar al metodo con marca de agua
-            #ruta_imagen = handle_uploaded_file(datos_imagen, inmueble.usuario)
             Imagen.objects.create(inmueble=inmueble, imagen=datos_imagen)
         return inmueble
 
 
-def handle_uploaded_file(f,user):
+def handle_uploaded_file(f, user):
     import uuid
     path = 'media/{}/{}{}'.format(user.cedulaRuc, f, uuid.uuid4())
     with open(path, 'wb+') as destination:

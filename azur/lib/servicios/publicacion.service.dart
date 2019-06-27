@@ -96,7 +96,8 @@ class InmuebleService{
       int predio, String ubicacion,
       List<String> rutasImg, String titulo,
       double precio, int tipoInmueble,
-      String descripcion) async {
+      String descripcion, int sector
+      ) async {
 
       var postUri = Uri.parse("http://$dominio/inmuebles/api/v1/inmuebles/post");
       var request = new http.MultipartRequest("POST", postUri);
@@ -106,6 +107,7 @@ class InmuebleService{
       request.fields['precio'] = precio.toString();
       request.fields['tipo'] = tipoInmueble.toString();
       request.fields['descripcion'] = descripcion;
+      request.fields['sector'] = sector.toString();
       //request.fields['usuario']= await getUserId();
       int usuario = await getUserId();
       request.fields['usuario'] = usuario.toString();
