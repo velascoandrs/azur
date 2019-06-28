@@ -1,4 +1,5 @@
 import 'package:azur/modelos/inmueble.model.dart';
+import 'package:azur/pages/PublicacionActualizar.dart';
 import 'package:azur/widgets/carrusel.dart';
 import 'package:azur/widgets/widgets_img_lib.dart';
 import 'package:flutter/material.dart';
@@ -122,7 +123,12 @@ class _InmuebleItemState extends State<InmuebleItem>{
                 new IconButton(
                   icon: new Icon(Icons.create),
                   tooltip: 'Actualizar publicación',
-                  onPressed: (){},
+                  onPressed: (){
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => PublicacionActualizar(inmueble: widget.inmueble,)),
+                    );
+                  },
                   color: Colors.blue,
                 ):new SizedBox(),
                 new IconButton(

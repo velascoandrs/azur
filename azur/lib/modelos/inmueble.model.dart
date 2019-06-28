@@ -19,12 +19,13 @@ class Inmueble{
   //int predio;
   double precio;
   int id;
+  String descripcion;
   List<Imagen> inmuebleImagenes;
-  Inmueble({this.titulo,this.precio,this.ubicacion,this.id=0,this.inmuebleImagenes,this.tipo,this.usuario,this.sector});
+  Inmueble({this.titulo,this.precio,this.ubicacion,this.id=0,this.inmuebleImagenes,this.tipo,this.usuario,this.sector,this.descripcion});
     // Deserializar el inmueble desde el json
   factory Inmueble.fromJson(Map<String, dynamic> json){
       var listaImg = json['inmuebleImagenes'] as List;
-      return Inmueble(id: json["id"],
+      return Inmueble(id: json["predio"],
           precio: double.parse(json["precio"]),
           //predio = json["predio"],
           usuario: json["usuario"],
@@ -32,6 +33,7 @@ class Inmueble{
           titulo: json["titulo"],
           ubicacion:json["ubicacion"],
           sector: json["sector"],
+          descripcion: json["descripcion"],
           inmuebleImagenes: listaImg.map((v)=>new Imagen(imagen: v['imagen'])).toList()
       );
     }
