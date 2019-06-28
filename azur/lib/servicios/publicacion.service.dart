@@ -84,6 +84,7 @@ class InmuebleService{
     return getJson(uri).then(
             (data){
               if(data!=false){
+                print(data['results']);
                 return data['results'].map<Inmueble>((item)=> new Inmueble.fromJson(item)).toList();
               }
               print("No existen mas datos!!");

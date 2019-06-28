@@ -1,9 +1,11 @@
 class Imagen{
   String imagen;
-  Imagen({this.imagen});
+  int id;
+  Imagen({this.imagen,this.id});
   factory Imagen.fromJson(Map<String, dynamic> parsedJson){
     return Imagen(
-        imagen:parsedJson['imagen']
+        imagen:parsedJson['imagen'],
+        id:parsedJson["id"],
     );
   }
 }
@@ -34,7 +36,7 @@ class Inmueble{
           ubicacion:json["ubicacion"],
           sector: json["sector"],
           descripcion: json["descripcion"],
-          inmuebleImagenes: listaImg.map((v)=>new Imagen(imagen: v['imagen'])).toList()
+          inmuebleImagenes: listaImg.map((v)=>new Imagen(imagen: v['imagen'],id: v["id"])).toList()
       );
     }
 }

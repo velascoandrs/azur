@@ -48,6 +48,10 @@ class _FormularioActualizarPublicacionState extends State<FormularioActualizarPu
   RegExp numeroRegex = RegExp(r'([1234567890]$)');
 
 
+  List<int> _imgEliminadas = [];
+
+
+
   Future validarExistePredio(String predio) async {
     var resultado = false;
     if(predio == widget.inmueble.id.toString()){
@@ -506,16 +510,21 @@ class _FormularioActualizarPublicacionState extends State<FormularioActualizarPu
     );
   }
 
+  bool existeListaEliminados(int id){
+    return _imgEliminadas.indexOf(id) != -1?  true : false;
+  }
   // ignore: non_constant_identifier_names
   Widget construir_galeriaInteractiva() {
     List<String> lista = this.widget.inmueble.inmuebleImagenes.map((imagen)=> imagen.imagen).toList();
+    List<int> listaIds = this.widget.inmueble.inmuebleImagenes.map((imagen)=> imagen.id).toList();
     return new Container(
       height: 200,
       child: new ListView.builder(
           shrinkWrap: true,
           scrollDirection: Axis.horizontal,
           itemCount: widget.inmueble.inmuebleImagenes.length,
-          itemBuilder: (_, int index) => new Container(
+          itemBuilder: (_, int index) {
+            return new Container(
             child: new Stack(
               children: <Widget>[
                 new Container(
@@ -527,10 +536,41 @@ class _FormularioActualizarPublicacionState extends State<FormularioActualizarPu
                       )
                   ),
                   margin: const EdgeInsets.all(10),
+                ),
+                new Positioned(
+                  top: 10,
+                  left: 10,
+                  child: new Container(
+                    width: 200,
+                    decoration: BoxDecoration(
+                      color: Colors.black45
+                    ),
+                    child: new Row(
+                      children: <Widget>[
+                        new Checkbox(
+                          value:existeListaEliminados(listaIds[index]),
+                          onChanged: (bool valor){
+                            setState(() {
+                              print(listaIds.toString());
+                              if (valor){
+                                _imgEliminadas.add(listaIds[index]);
+                              }else{
+                                _imgEliminadas.removeAt(_imgEliminadas.indexOf(listaIds[index]));
+                              }
+                              print(_imgEliminadas.toString());
+                            });
+                          },
+                        ),
+                        new Icon(Icons.delete),
+                        new Text("Eliminar")
+                      ],
+                    ),
+                  )
                 )
               ],
             ),
-          )
+          );
+          }
 
       ),
     );
