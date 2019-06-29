@@ -10,7 +10,8 @@ class TipoInmueble(models.Model):
 # Metodo de soporte que da formato a la ruta donde se almacenaran las imagenes de un inmueble
 def user_directory_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
-    return 'user_{0}/{1}/{2}'.format(instance.inmueble.usuario.id, instance.inmueble.predio, filename)
+    return 'user_{0}/{1}-{3}/{2}'.format(instance.inmueble.usuario.id, instance.inmueble.predio,
+                                         filename, instance.inmueble.id)
 
 
 #  Imagen
@@ -26,7 +27,7 @@ class Sector(models.Model):
 
 # Inmueble
 class Inmueble(models.Model):
-    predio = models.IntegerField(unique=True, primary_key=True, null=False, blank=False, auto_created=False)
+    predio = models.IntegerField(unique=True, db_index=True, null=False, blank=False)
     ubicacion = models.CharField(max_length=50, null=False, blank=False)
     precio = models.DecimalField(null=False, blank=False, decimal_places=2, max_digits=10)
     titulo = models.CharField(null=False, blank=False, max_length=50)

@@ -19,6 +19,7 @@ class InmuebleSerializador(serializers.ModelSerializer):
         fields = '__all__'
 
     def create(self, validated_data):
+        print("Se va a crear")
         inmuebleImagenes_data = self.context.get('view').request.FILES
         print("Esto ", inmuebleImagenes_data)
         inmueble = Inmueble.objects.create(**validated_data)
@@ -27,6 +28,8 @@ class InmuebleSerializador(serializers.ModelSerializer):
             # Llamar al metodo con marca de agua
             Imagen.objects.create(inmueble=inmueble, imagen=datos_imagen)
         return inmueble
+
+
 
 
 def handle_uploaded_file(f, user):

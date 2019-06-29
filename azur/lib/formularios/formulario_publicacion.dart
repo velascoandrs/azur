@@ -20,7 +20,7 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
 
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   // Variables del formulario
-  List<String> _tiposInmueble = <String>['','Casa', 'Oficina', 'Terreno'];
+  List<String> _tiposInmueble = <String>['','Casa', 'Oficina', 'Departamento'];
   List<String> _sectores = <String>['','Norte', 'Centro', 'Sur', 'Centro-Norte'];
   String _nombreTipo = '';
   String _nombreSector = '';

@@ -1,13 +1,16 @@
+from _pydecimal import Decimal
+
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404
-from rest_framework import authentication, permissions, generics, status
+from rest_framework import authentication, permissions, generics, status, viewsets
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from apps.inmuebles.filtros import InmuebleFilter
-from apps.inmuebles.models import Inmueble
+from apps.inmuebles.models import Inmueble, Imagen, TipoInmueble, Sector
 from apps.inmuebles.serializers import InmuebleSerializador
 
 
@@ -34,7 +37,7 @@ def publicar_inmueble(request):
     if serialized.is_valid():
         serialized.save()
         # Llamar al metodo para enviar email
-        return JsonResponse({'mensaje':serialized.data}, status=status.HTTP_201_CREATED)
+        return JsonResponse({'mensaje': serialized.data}, status=status.HTTP_201_CREATED)
     else:
         return JsonResponse({'mensaje': serialized._errors}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -42,6 +45,49 @@ def publicar_inmueble(request):
 class Upload(generics.ListCreateAPIView):
     serializer_class = InmuebleSerializador
     queryset = Inmueble.objects.all().order_by('-check_in')
+
+
+# API EXPERIMENTAL
+class InmuebleAPI(viewsets.ModelViewSet):
+    queryset = Inmueble.objects.all()
+    serializer_class = InmuebleSerializador
+
+    def update(self, request, pk=None, **kwargs):
+        #  inmueble = Inmueble.objects.get(predio=pk)
+        # 1 Actualizamos el inmueble
+
+        """
+        inmueble = Inmueble.objects.get(predio=pk)
+        instanciaInmueble = inmueble
+        instanciaInmueble.titulo = request.data.get("titulo")
+        instanciaInmueble.predio = int(request.data.get("predio"))
+        instanciaInmueble.precio = request.data.get("precio")
+        instanciaInmueble.ubicacion = request.data.get("ubicacion")
+        instanciaInmueble.descripcion = request.data.get("descripcion")
+        instanciaInmueble.tipo = TipoInmueble.objects.get(id=int(request.data.get("tipo")))
+        instanciaInmueble.sector = Sector.objects.get(id=int(request.data.get("sector")))
+        instanciaInmueble.save()
+        """
+        instance = self.get_object()
+        serializer = InmuebleSerializador(instance=instance, data=request.data, partial=True)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            #  self.perform_update(serializer)
+        #  2 Borramos las imagenes a ser borradas
+        """
+        idsImagenes = request.data.get("idsImg")
+        if idsImagenes:
+            for idImg in idsImagenes:
+                Imagen.objects.get(id=idImg).delete()
+        # 3 Creamos las nuevas imagenes
+        if request.FILES:
+            inmuebleImagenes_data = request.FILES
+            for datos_imagen in inmuebleImagenes_data.values():
+                # Llamar al metodo con marca de agua
+                Imagen.objects.create(inmueble=inmueble, imagen=datos_imagen)
+        """
+        # 4 Retornar el inmueble creado
+        return Response(serializer.data)
 
 
 def existe_predio(request, predio):

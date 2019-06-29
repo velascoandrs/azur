@@ -20,15 +20,11 @@ cerrarSession()async{
 }
 
 
-
-
-
 // Obtener el id del usuario
 Future<int> getUserId()async{
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   return prefs.getInt('usuario_id') ?? '';
 }
-
 
 // Obtner el numero de ced/ruc/pasaporte
 Future<String> getUserCed()async{

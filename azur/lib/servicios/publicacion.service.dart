@@ -54,8 +54,8 @@ Future<bool>subir_publicacion(List<String> paths, ) async {
       return resultado;
   }
   */
-class InmuebleService{
 
+class InmuebleService{
   Future<bool> existePredio(String predio) async{
     final response = await http.get(
       'http://$dominio/inmuebles/api/v1/ex_predio/$predio',
@@ -80,7 +80,6 @@ class InmuebleService{
     var uri = new Uri.http(dominio,"inmuebles/api/v1/inmuebles/",{
       'page':"$page",
     });
-
     return getJson(uri).then(
             (data){
               if(data!=false){
@@ -101,7 +100,9 @@ class InmuebleService{
       ) async {
 
       var postUri = Uri.parse("http://$dominio/inmuebles/api/v1/inmuebles/post");
+      int usuario = await getUserId();
       var request = new http.MultipartRequest("POST", postUri);
+
       request.fields['predio'] = predio.toString();
       request.fields['ubicacion'] = ubicacion;
       request.fields['titulo'] = titulo;
@@ -109,8 +110,6 @@ class InmuebleService{
       request.fields['tipo'] = tipoInmueble.toString();
       request.fields['descripcion'] = descripcion;
       request.fields['sector'] = sector.toString();
-      //request.fields['usuario']= await getUserId();
-      int usuario = await getUserId();
       request.fields['usuario'] = usuario.toString();
 
       print(request.fields['usuario']);
@@ -122,9 +121,8 @@ class InmuebleService{
 
       bool resultado = false;
       await request.send().then((response) {
-        print("TODO OK");
         if (response.statusCode == 201){
-          print("TODO OK");
+          print("Inmueble publicado");
           resultado = true;
         }
       }
