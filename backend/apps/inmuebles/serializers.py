@@ -31,7 +31,6 @@ class InmuebleSerializador(serializers.ModelSerializer):
 
 
 
-
 def handle_uploaded_file(f, user):
     import uuid
     path = 'media/{}/{}{}'.format(user.cedulaRuc, f, uuid.uuid4())

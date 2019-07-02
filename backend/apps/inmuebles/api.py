@@ -42,50 +42,38 @@ def publicar_inmueble(request):
         return JsonResponse({'mensaje': serialized._errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class Upload(generics.ListCreateAPIView):
+# API para registrar inmueble version 1
+class RegistrarInmueble(generics.ListCreateAPIView):
     serializer_class = InmuebleSerializador
     queryset = Inmueble.objects.all().order_by('-check_in')
 
 
-# API EXPERIMENTAL
+# API EXPERIMENTAL PUT/POST/GET/DELETE
 class InmuebleAPI(viewsets.ModelViewSet):
     queryset = Inmueble.objects.all()
     serializer_class = InmuebleSerializador
 
     def update(self, request, pk=None, **kwargs):
-        #  inmueble = Inmueble.objects.get(predio=pk)
+        inmueble = Inmueble.objects.get(id=pk)
         # 1 Actualizamos el inmueble
-
-        """
-        inmueble = Inmueble.objects.get(predio=pk)
-        instanciaInmueble = inmueble
-        instanciaInmueble.titulo = request.data.get("titulo")
-        instanciaInmueble.predio = int(request.data.get("predio"))
-        instanciaInmueble.precio = request.data.get("precio")
-        instanciaInmueble.ubicacion = request.data.get("ubicacion")
-        instanciaInmueble.descripcion = request.data.get("descripcion")
-        instanciaInmueble.tipo = TipoInmueble.objects.get(id=int(request.data.get("tipo")))
-        instanciaInmueble.sector = Sector.objects.get(id=int(request.data.get("sector")))
-        instanciaInmueble.save()
-        """
         instance = self.get_object()
         serializer = InmuebleSerializador(instance=instance, data=request.data, partial=True)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-            #  self.perform_update(serializer)
+            self.perform_update(serializer)
+
         #  2 Borramos las imagenes a ser borradas
-        """
-        idsImagenes = request.data.get("idsImg")
-        if idsImagenes:
+        idsImagenes = request.data.getlist("idsImg")
+        if idsImagenes:  # Si existen ids
             for idImg in idsImagenes:
                 Imagen.objects.get(id=idImg).delete()
-        # 3 Creamos las nuevas imagenes
+        # 3 Guardamos las nuevas imagenes
         if request.FILES:
             inmuebleImagenes_data = request.FILES
             for datos_imagen in inmuebleImagenes_data.values():
                 # Llamar al metodo con marca de agua
                 Imagen.objects.create(inmueble=inmueble, imagen=datos_imagen)
-        """
+
         # 4 Retornar el inmueble creado
         return Response(serializer.data)
 
