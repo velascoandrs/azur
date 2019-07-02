@@ -50,7 +50,7 @@ class RegistrarInmueble(generics.ListCreateAPIView):
 
 # API EXPERIMENTAL PUT/POST/GET/DELETE
 class InmuebleAPI(viewsets.ModelViewSet):
-    queryset = Inmueble.objects.all()
+    queryset = Inmueble.objects.all().order_by('-pk')
     serializer_class = InmuebleSerializador
 
     def update(self, request, pk=None, **kwargs):
