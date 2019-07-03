@@ -63,12 +63,16 @@ class InmuebleAPI(viewsets.ModelViewSet):
             self.perform_update(serializer)
 
         #  2 Borramos las imagenes a ser borradas
-        idsImagenes = request.data.getlist("idsImg")
-        if idsImagenes:  # Si existen ids
+
+        idsImagenes = request.data.get("idsImg")[1:-1].split(",")
+        print(idsImagenes)
+        if idsImagenes[0]:  # Si existen ids
             for idImg in idsImagenes:
                 Imagen.objects.get(id=idImg).delete()
         # 3 Guardamos las nuevas imagenes
+        print("Se van a guardar las nuevas imagenes")
         if request.FILES:
+            print("Si hay imagenes")
             inmuebleImagenes_data = request.FILES
             for datos_imagen in inmuebleImagenes_data.values():
                 # Llamar al metodo con marca de agua

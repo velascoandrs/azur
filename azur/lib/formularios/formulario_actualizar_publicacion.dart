@@ -28,7 +28,7 @@ class _FormularioActualizarPublicacionState extends State<FormularioActualizarPu
   // Diccionarios de rutas
   Map<String, String> _rutasImagenes;
   // Lista de rutas
-  List<String> imagenesInmueble;
+  List<String> imagenesInmueble=[];
   List<String> _rutasImg = [];
   bool imagenesIntactas = true;
 
@@ -50,7 +50,14 @@ class _FormularioActualizarPublicacionState extends State<FormularioActualizarPu
 
   List<int> _imgEliminadas = [];
 
+  int calcularNumeroImagenes(){
 
+    int nuevasImagenes = this.imagenesInmueble!=null?this.imagenesInmueble.length:0;
+    int viejasImagenesEliminadas = this._imgEliminadas!=null?this._imgEliminadas.length:0;
+
+    return
+      this.widget.inmueble.inmuebleImagenes.length-viejasImagenesEliminadas+nuevasImagenes;
+  }
 
   Future validarExistePredio(String predio) async {
     var resultado = false;
@@ -122,7 +129,7 @@ class _FormularioActualizarPublicacionState extends State<FormularioActualizarPu
   }
 
   Widget animacionCargando(){
-    return _seGuardo==true?exitoGuardar():Container(
+    return _seGuardo==true?exitoActualizar():Container(
       alignment: Alignment.center,
       height: 50,
       width: 50,
@@ -130,7 +137,7 @@ class _FormularioActualizarPublicacionState extends State<FormularioActualizarPu
     );
   }
 
-  Widget exitoGuardar(){
+  Widget exitoActualizar(){
     return Container(
       padding: const EdgeInsets.all(10),
       alignment: Alignment.center,
@@ -142,7 +149,7 @@ class _FormularioActualizarPublicacionState extends State<FormularioActualizarPu
       height: 100,
       child: new Column(
         children: <Widget>[
-          Text("Publicacion registrada!!!",style: TextStyle(fontSize: 20),),
+          Text("Publicacion actualizada!!!",style: TextStyle(fontSize: 20),),
           FlatButton(
             color: Colors.black87,
             child: Text("Ir a inicio"),
@@ -164,7 +171,7 @@ class _FormularioActualizarPublicacionState extends State<FormularioActualizarPu
       child: new Form(
         key: _formKey,
         autovalidate: true,
-        child: _seGuardo?exitoGuardar():new ListView(
+        child: _seGuardo?exitoActualizar():new ListView(
           padding: const EdgeInsets.all(16),
           children: <Widget>[
             construir_campo_tipo(),
@@ -449,7 +456,8 @@ class _FormularioActualizarPublicacionState extends State<FormularioActualizarPu
             // Si el formulario es valido
             var formularioValido = true;
             var erroresExtras = '';
-            if (imagenesInmueble!=null && imagenesInmueble.length >=2 && imagenesInmueble.length <=5){
+            print("Numero de imagenes del inmueble: ${this.calcularNumeroImagenes()}");
+            if (this.calcularNumeroImagenes() >=2 && this.calcularNumeroImagenes() <=5){
               setState(() {
                 formularioValido = true;
               });
@@ -473,12 +481,22 @@ class _FormularioActualizarPublicacionState extends State<FormularioActualizarPu
                 formularioHabilitado  = false;
               });
               _formKey.currentState.save();
-              // Llamar al servicio de registrar publicacion
-              /*var seGuardo = await InmuebleService().crearInmueble(
-                  _predio, _ubicacion, _rutasImg, _titulo,
-                  _precio, _tipoInmuebleId, _descripcion, _sectorId);
-              print("Se guardo: $seGuardo");
-              if(seGuardo){
+
+              //Llamar al servicio de actualizar publicacion
+              var seActualizo = await InmuebleService().actualizarInmueble(
+                idInmueble: widget.inmueble.id,
+                precio: _precio,
+                descripcion: _descripcion,
+                idsImg: _imgEliminadas,
+                predio: _predio,
+                rutasImg: imagenesInmueble,
+                sector: _sectorId,
+                tipoInmueble: _tipoInmuebleId,
+                titulo: _titulo,
+                ubicacion: _ubicacion
+              );
+              print("Se actualizo: $seActualizo");
+              if(seActualizo){
                 //_mostrarDialogo("Inmueble publicado con exito",true);
                 setState(() {
                   _seGuardo = true;
@@ -486,7 +504,7 @@ class _FormularioActualizarPublicacionState extends State<FormularioActualizarPu
                 //irInicio();
               }else{
                 _mostrarDialogo("Ocurrio un problema intentelo más tarde",false);
-              }*/
+              }
 
             }else{
               _mostrarDialogo("Formulario invalido: \n$erroresExtras", false);
@@ -504,7 +522,7 @@ class _FormularioActualizarPublicacionState extends State<FormularioActualizarPu
             onPressed: ()=>_abrirExporadorArchivos(),
             child: Text("Buscar imagenes"),
           ):vacio(),
-          imagenesInmueble!=null?new VisorImagenes(urls: imagenesInmueble,localStorage: false,):new Text("No hay imagenes"),
+          imagenesInmueble!=null?new VisorImagenes(urls: imagenesInmueble,localStorage: true,):new Text("No hay imagenes"),
         ],
       ),
     );

@@ -1,4 +1,7 @@
 from django.db import models
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
+
 from apps.usuarios.models import User
 
 
@@ -10,14 +13,19 @@ class TipoInmueble(models.Model):
 # Metodo de soporte que da formato a la ruta donde se almacenaran las imagenes de un inmueble
 def user_directory_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
-    return 'user_{0}/{1}-{3}/{2}'.format(instance.inmueble.usuario.id, instance.inmueble.predio,
-                                         filename, instance.inmueble.id)
+    return 'user_{0}/{2}/{1}'.format(instance.inmueble.usuario.id, filename, instance.inmueble.id)
 
 
 #  Imagen
 class Imagen(models.Model):
     imagen = models.ImageField(upload_to=user_directory_path)
     inmueble = models.ForeignKey('Inmueble', related_name='inmuebleImagenes', on_delete=models.CASCADE)
+
+
+# Borra el archivo luego de que el objeto imagen es borrado
+@receiver(post_delete, sender=Imagen)
+def submission_delete(sender, instance, **kwargs):
+    instance.imagen.delete(False)
 
 
 # Sector
