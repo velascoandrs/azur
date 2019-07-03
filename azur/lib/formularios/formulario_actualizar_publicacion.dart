@@ -28,7 +28,7 @@ class _FormularioActualizarPublicacionState extends State<FormularioActualizarPu
   // Diccionarios de rutas
   Map<String, String> _rutasImagenes;
   // Lista de rutas
-  List<String> imagenesInmueble=[];
+  List<String> imagenesInmueble;
   List<String> _rutasImg = [];
   bool imagenesIntactas = true;
 
@@ -50,11 +50,12 @@ class _FormularioActualizarPublicacionState extends State<FormularioActualizarPu
 
   List<int> _imgEliminadas = [];
 
+
+
   int calcularNumeroImagenes(){
 
     int nuevasImagenes = this.imagenesInmueble!=null?this.imagenesInmueble.length:0;
     int viejasImagenesEliminadas = this._imgEliminadas!=null?this._imgEliminadas.length:0;
-
     return
       this.widget.inmueble.inmuebleImagenes.length-viejasImagenesEliminadas+nuevasImagenes;
   }
@@ -70,6 +71,7 @@ class _FormularioActualizarPublicacionState extends State<FormularioActualizarPu
       });
     }
   }
+
 
   void irInicio()async{
     var valor = await getUserCed();
@@ -162,6 +164,7 @@ class _FormularioActualizarPublicacionState extends State<FormularioActualizarPu
 
   @override
   Widget build(BuildContext context) {
+
     // TODO: implement build
     return new SafeArea(
       top: false,
@@ -330,7 +333,7 @@ class _FormularioActualizarPublicacionState extends State<FormularioActualizarPu
     );
   }
 
-  // Construye el campo para la ubicacion
+  // Construye el campo para el tipo
   Widget construir_campo_tipo(){   // ignore: non_constant_identifier_names
     return new FormField(
       enabled: formularioHabilitado,
@@ -338,7 +341,6 @@ class _FormularioActualizarPublicacionState extends State<FormularioActualizarPu
         setState(() {
           _tipoInmuebleId = _tiposInmueble.indexOf(valor);
           print("Tipo de inmueble es $_tipoInmuebleId");
-
         });
       },
       builder: (FormFieldState state){
@@ -346,13 +348,13 @@ class _FormularioActualizarPublicacionState extends State<FormularioActualizarPu
           decoration: InputDecoration(
             enabled: formularioHabilitado,
             icon: const Icon(Icons.category),
-            labelText: 'Tipo de Inmueble',
           ),
           isEmpty: _nombreTipo == '',
           child: new DropdownButtonHideUnderline(
             child: new DropdownButton(
-              value: _tiposInmueble[widget.inmueble.tipo],
-              isDense: true,
+              hint: new Text("Vuelve a seleccionar un tipo de inmueble"),
+              isExpanded: true,
+              value: _nombreTipo,
               onChanged: (String valor){
                 setState(() {
                   print("El valor es $valor");
@@ -373,7 +375,7 @@ class _FormularioActualizarPublicacionState extends State<FormularioActualizarPu
     );
   }
 
-
+// Construye el campo para sector
   Widget construir_campo_sector(){   // ignore: non_constant_identifier_names
     return new FormField(
       enabled: formularioHabilitado,
@@ -388,13 +390,15 @@ class _FormularioActualizarPublicacionState extends State<FormularioActualizarPu
           decoration: InputDecoration(
             enabled: formularioHabilitado,
             icon: const Icon(Icons.place),
-            labelText: 'Sector',
           ),
           isEmpty: _nombreSector == '',
           child: new DropdownButtonHideUnderline(
             child: new DropdownButton(
-              value: _sectores[widget.inmueble.sector],
-              isDense: true,
+              value: _nombreSector,
+              hint: new Text("Vuelve a seleccionar el sector"),
+              elevation: 90,
+              //value: _nombreSector,
+              isExpanded: true,
               onChanged: (String valor){
                 setState(() {
                   print("El valor del sector es $valor");
