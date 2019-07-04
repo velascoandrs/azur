@@ -470,9 +470,15 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
                       //irInicio();
               }else{
                     _mostrarDialogo("Ocurrio un problema intentelo más tarde",false);
+                    setState(() {
+                        estaSubiendo =false;
+                    });
               }
             }else{
               _mostrarDialogo("Formulario invalido: \n$erroresExtras", false);
+              setState(() {
+                estaSubiendo =false;
+              });
             }
           },
         )

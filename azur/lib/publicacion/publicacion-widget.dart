@@ -1,9 +1,9 @@
 import 'package:azur/modelos/inmueble.model.dart';
 import 'package:azur/pages/PublicacionActualizar.dart';
 import 'package:azur/widgets/carrusel.dart';
-import 'package:azur/widgets/widgets_img_lib.dart';
 import 'package:flutter/material.dart';
 
+/*
 class PublicacionItem extends StatelessWidget {
   final Inmueble inmueble;
   PublicacionItem({this.inmueble});
@@ -50,7 +50,7 @@ class PublicacionItem extends StatelessWidget {
  );
  }
 }
-
+*/
 
 class InmuebleItem extends StatefulWidget{
 
@@ -66,16 +66,48 @@ class InmuebleItem extends StatefulWidget{
 }
 
 class _InmuebleItemState extends State<InmuebleItem>{
+  bool _activo = true;
   List<String> urls = [];
 
   List <String> getUrls(){
     return this.widget.inmueble.inmuebleImagenes.map((imagen)=> imagen.imagen).toList();
   }
 
+  void _mostrarDialogo() {
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Aviso"),
+          content: new Text("¿Desea borrar la publicación?"),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Si"),
+              onPressed: () async{
+                // Llamar al servicio de borrar
+                // Desactivar widget
+                setState(() {
+                  _activo=false;
+                });
+                Navigator.pop(context);
+              },
+            ),
+            new FlatButton(
+              child: new Text("No"),
+              onPressed: ()=>Navigator.pop(context),
+            )
+          ],
+        );
+      },
+    );
+  }
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return new Container(
+    return _activo?new Container(
       padding: const EdgeInsets.all(10),
       child: new Column(
         children: <Widget>[
@@ -116,7 +148,9 @@ class _InmuebleItemState extends State<InmuebleItem>{
                 new IconButton(
                   icon: new Icon(Icons.delete),
                   tooltip: 'Eliminar publicación',
-                  onPressed: (){},
+                  onPressed: (){
+                    _mostrarDialogo();
+                  },
                   color: Colors.redAccent,
                 ):new SizedBox(),
                 widget.idUsuario == widget.inmueble.usuario?
@@ -134,7 +168,8 @@ class _InmuebleItemState extends State<InmuebleItem>{
                 new IconButton(
                   icon: new Icon(Icons.info),
                   tooltip: 'Ver inmueble',
-                  onPressed: (){},
+                  onPressed: (){
+                  },
                   color: Colors.amber,
                 )
               ],
@@ -143,7 +178,7 @@ class _InmuebleItemState extends State<InmuebleItem>{
 
         ],
       ),
-    );
+    ):new Container();
   }
 
 }

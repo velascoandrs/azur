@@ -142,6 +142,7 @@ class _FormularioLoginState extends State<FormularioLogin> {
                   padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
                   onPressed: () {
                       // Ir a pantalla registrar
+                       Navigator.of(context, rootNavigator: true).pop();
                        Navigator.push(context,MaterialPageRoute(builder: (context) => Registro()),);
                   },
                   child: Text('Registrarse',textAlign: TextAlign.center,style: style.copyWith(color: Colors.black, fontWeight: FontWeight.bold),),

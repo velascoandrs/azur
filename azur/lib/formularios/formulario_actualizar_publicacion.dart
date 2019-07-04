@@ -347,14 +347,16 @@ class _FormularioActualizarPublicacionState extends State<FormularioActualizarPu
         return InputDecorator(
           decoration: InputDecoration(
             enabled: formularioHabilitado,
+            alignLabelWithHint: true,
+            labelText: "Vuelve a seleccionar un tipo de inmueble",
             icon: const Icon(Icons.category),
           ),
           isEmpty: _nombreTipo == '',
           child: new DropdownButtonHideUnderline(
             child: new DropdownButton(
+              value: _nombreTipo,
               hint: new Text("Vuelve a seleccionar un tipo de inmueble"),
               isExpanded: true,
-              value: _nombreTipo,
               onChanged: (String valor){
                 setState(() {
                   print("El valor es $valor");
@@ -388,6 +390,7 @@ class _FormularioActualizarPublicacionState extends State<FormularioActualizarPu
       builder: (FormFieldState state){
         return InputDecorator(
           decoration: InputDecoration(
+            labelText: "Vuelve a seleccionar el Sector",
             enabled: formularioHabilitado,
             icon: const Icon(Icons.place),
           ),
@@ -508,10 +511,16 @@ class _FormularioActualizarPublicacionState extends State<FormularioActualizarPu
                 //irInicio();
               }else{
                 _mostrarDialogo("Ocurrio un problema intentelo más tarde",false);
+                setState(() {
+                  estaSubiendo =false;
+                });
               }
 
             }else{
               _mostrarDialogo("Formulario invalido: \n$erroresExtras", false);
+              setState(() {
+                estaSubiendo =false;
+              });
             }
           },
         )
