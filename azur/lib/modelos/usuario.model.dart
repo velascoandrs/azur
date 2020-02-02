@@ -1,5 +1,5 @@
 class Usuario {
-    String id; 
+    int id;
     String cedulaRuc;
     String telefono;
     String email;
@@ -17,10 +17,9 @@ class Usuario {
 
     // Deserializar el usuario desde el json
      Usuario.deserializar(Map json):
-      id = json["id"],
+      id = int.parse(json["id"]),
       cedulaRuc = json["cedulaRuc"],
       telefono = json["telefono"],
       email = json["email"],
       tipo = json["tipo"];
-
 }

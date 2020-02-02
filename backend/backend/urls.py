@@ -19,7 +19,10 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework_simplejwt import views as jwt_views
 from django.conf import settings
+
+from apps.ciudad.models import Ciudad
 from apps.usuarios.api_auth import ObtenerUsuario
+from backend.funciones import crear_datos
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -29,6 +32,9 @@ urlpatterns = [
     path('api/token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
     path('api/usuario/get', ObtenerUsuario.as_view(), name='usuario'),
     path('usuarios/', include(('apps.usuarios.urls', 'usuarios'), namespace="usuarios")),
-    path('inmuebles/', include(('apps.inmuebles.urls', 'inmuebles'), namespace="inmuebles"))
+    path('inmuebles/', include(('apps.inmuebles.urls', 'inmuebles'), namespace="inmuebles")),
+    path('ciudad/', include(('apps.ciudad.urls', 'ciudad'), namespace="ciudad"))
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+crear_datos(ruta='datos-prueba/datos-ciudad.json', model=Ciudad, nombreEntidad='ciudad')

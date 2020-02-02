@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:core';
 import 'dart:io';
 import 'package:azur/global.dart';
-import 'package:azur/modelos/inmueble-model.dart';
 import 'package:azur/modelos/inmueble.model.dart';
 import 'package:azur/utilitarios/session.dart';
 import 'package:http/http.dart' as http;
@@ -54,8 +53,8 @@ Future<bool>subir_publicacion(List<String> paths, ) async {
       return resultado;
   }
   */
-class InmuebleService{
 
+class InmuebleService{
   Future<bool> existePredio(String predio) async{
     final response = await http.get(
       'http://$dominio/inmuebles/api/v1/ex_predio/$predio',
@@ -80,10 +79,10 @@ class InmuebleService{
     var uri = new Uri.http(dominio,"inmuebles/api/v1/inmuebles/",{
       'page':"$page",
     });
-
     return getJson(uri).then(
             (data){
               if(data!=false){
+                print(data['results']);
                 return data['results'].map<Inmueble>((item)=> new Inmueble.fromJson(item)).toList();
               }
               print("No existen mas datos!!");
@@ -92,23 +91,102 @@ class InmuebleService{
     );
   }
 
+  Future <bool> borrarInmueble(int idInmueble)async{
+    bool resultado = true;
+    String url = "http://$dominio/inmuebles/api/v2/inmuebles/$idInmueble";
+    var postUri = Uri.parse(url);
+    var request = new http.Request("DELETE", postUri);
+    await request.send()
+        .then(
+            (response) {
+                if (response.statusCode == 201){
+                    print("Inmueble borrado");
+                    resultado = true;
+                }else{
+                  resultado = false;
+                }
+        }
+    );
+    return resultado;
+  }
+
+  Future <bool> actualizarInmueble(
+      {int idInmueble,
+      String titulo,
+      int predio, String ubicacion,
+      double precio, int tipoInmueble,
+      String descripcion, int sector,
+      List<int>idsImg, List<String> rutasImg}
+      )async{
+    String url = "http://$dominio/inmuebles/api/v2/inmuebles/$idInmueble/";
+    var postUri = Uri.parse(url);
+    var request = new http.MultipartRequest("PUT", postUri);
+
+    request.fields['predio'] = predio.toString();
+    request.fields['ubicacion'] = ubicacion;
+    request.fields['titulo'] = titulo;
+    request.fields['precio'] = precio.toString();
+    request.fields['tipo'] = tipoInmueble.toString();
+    request.fields['descripcion'] = descripcion;
+    request.fields['sector'] = sector.toString();
+    request.fields['idsImg']=idsImg.toString();
+
+    if(rutasImg.length > 0){
+      int indice = 0;
+      for(String path in rutasImg){
+        request.files.add(new http.MultipartFile.fromBytes('imagen$indice', File(path).readAsBytesSync(), contentType: new MediaType('image', 'jpeg'),filename: "fto"));
+        indice++;
+      }
+    }
+    print("La peticion ${request.fields.toString()}");
+    bool resultado = false;
+    await request.send().then((response) {
+      if (response.statusCode == 200){
+        print("Inmueble actualizado");
+        resultado = true;
+      }
+    }
+    );
+    return resultado;
+    //var request = crearPeticion(url, "PUT");
+  }
+  /*
+  @protected
+  MultipartRequest crearPeticion(String url,String metodo, Map<String,String>parametos){
+    var postUri = Uri.parse(url);
+    var request = new http.MultipartRequest(metodo, postUri);
+    parametos.forEach(
+        (k,v){
+          request.fields[k]=v;
+        }
+    );
+    return request;
+  }
+ */
+
+
+
   Future<bool> crearInmueble(
       int predio, String ubicacion,
       List<String> rutasImg, String titulo,
       double precio, int tipoInmueble,
-      String descripcion)async{
+      String descripcion, int sector
+      ) async {
 
       var postUri = Uri.parse("http://$dominio/inmuebles/api/v1/inmuebles/post");
+      int usuario = await getUserId();
       var request = new http.MultipartRequest("POST", postUri);
+
       request.fields['predio'] = predio.toString();
       request.fields['ubicacion'] = ubicacion;
       request.fields['titulo'] = titulo;
       request.fields['precio'] = precio.toString();
       request.fields['tipo'] = tipoInmueble.toString();
       request.fields['descripcion'] = descripcion;
-      request.fields['usuario']= await getUserId();
-      print(request.fields['usuario']);
+      request.fields['sector'] = sector.toString();
+      request.fields['usuario'] = usuario.toString();
 
+      print(request.fields['usuario']);
       int indice = 0;
       for(String path in rutasImg){
         request.files.add(new http.MultipartFile.fromBytes('file$indice', File(path).readAsBytesSync(), contentType: new MediaType('image', 'jpeg'),filename: "fto"));
@@ -117,9 +195,8 @@ class InmuebleService{
 
       bool resultado = false;
       await request.send().then((response) {
-        print("TODO OK");
         if (response.statusCode == 201){
-          print("TODO OK");
+          print("Inmueble publicado");
           resultado = true;
         }
       }
@@ -127,3 +204,7 @@ class InmuebleService{
       return resultado;
   }
 }
+
+
+// 1 Registrar Inmueble
+// 2 Subir imagenes ---> Propia clase http

@@ -20,8 +20,10 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
 
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   // Variables del formulario
-  List<String> _tiposInmueble = <String>['','Casa', 'Oficina', 'Terreno'];
+  List<String> _tiposInmueble = <String>['','Casa', 'Oficina', 'Departamento'];
+  List<String> _sectores = <String>['','Norte', 'Centro', 'Sur', 'Centro-Norte'];
   String _nombreTipo = '';
+  String _nombreSector = '';
 
   // Diccionarios de rutas
   Map<String, String> _rutasImagenes;
@@ -35,6 +37,7 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
   String _descripcion = "";
   double _precio = 0.00;
   int _tipoInmuebleId = 0;
+  int _sectorId = 0;
 
 
   bool estaSubiendo = false;
@@ -156,6 +159,7 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
           children: <Widget>[
               construir_campo_tipo(),
               construir_campo_titulo(),
+              construir_campo_sector(),
               construir_campo_predio(),
               construir_campo_ubicacion(),
               construir_campo_descripcion(),
@@ -346,6 +350,48 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
     );
   }
 
+
+  Widget construir_campo_sector(){   // ignore: non_constant_identifier_names
+    return new FormField(
+      enabled: formularioHabilitado,
+      onSaved: (valor){
+        setState(() {
+          _sectorId = _sectores.indexOf(valor);
+          print("El sector es $_sectorId");
+        });
+      },
+      builder: (FormFieldState state){
+        return InputDecorator(
+          decoration: InputDecoration(
+            enabled: formularioHabilitado,
+            icon: const Icon(Icons.place),
+            labelText: 'Sector',
+          ),
+          isEmpty: _nombreSector == '',
+          child: new DropdownButtonHideUnderline(
+            child: new DropdownButton(
+              value: _nombreSector,
+              isDense: true,
+              onChanged: (String valor){
+                setState(() {
+                  print("El valor del sector es $valor");
+                  _nombreSector = valor;
+                  state.didChange(valor);
+                });
+              },
+              items: _sectores.map((String valor){
+                return new DropdownMenuItem(
+                  value: valor,
+                  child: new Text(valor),
+                );
+              }).toList(),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   Widget construir_campo_imagenes(){   // ignore: non_constant_identifier_names
     return new FormField(
       enabled: formularioHabilitado,
@@ -400,6 +446,11 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
               formularioValido = false;
             }
 
+            if(_nombreSector == ''){
+              erroresExtras+="Seleccione un sector\n";
+              formularioValido = false;
+            }
+
             if (_formKey.currentState.validate() && formularioValido==true) {
               setState(() {
                 estaSubiendo = true;
@@ -409,7 +460,7 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
               // Llamar al servicio de registrar publicacion
               var seGuardo = await InmuebleService().crearInmueble(
                   _predio, _ubicacion, _rutasImg, _titulo,
-                  _precio, _tipoInmuebleId, _descripcion);
+                  _precio, _tipoInmuebleId, _descripcion, _sectorId);
               print("Se guardo: $seGuardo");
               if(seGuardo){
                      //_mostrarDialogo("Inmueble publicado con exito",true);
@@ -419,9 +470,15 @@ class _FormularioCrearPublicacionState extends State<FormularioCrearPublicacion>
                       //irInicio();
               }else{
                     _mostrarDialogo("Ocurrio un problema intentelo más tarde",false);
+                    setState(() {
+                        estaSubiendo =false;
+                    });
               }
             }else{
               _mostrarDialogo("Formulario invalido: \n$erroresExtras", false);
+              setState(() {
+                estaSubiendo =false;
+              });
             }
           },
         )
