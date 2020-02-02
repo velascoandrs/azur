@@ -1,7 +1,9 @@
 from _pydecimal import Decimal
 
+import django_filters
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404
+from rest_framework import filters
 from rest_framework import authentication, permissions, generics, status, viewsets
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -52,6 +54,8 @@ class RegistrarInmueble(generics.ListCreateAPIView):
 class InmuebleAPI(viewsets.ModelViewSet):
     queryset = Inmueble.objects.all().order_by('-pk')
     serializer_class = InmuebleSerializador
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend, filters.SearchFilter]
+    search_fields = ['titulo']
 
     def update(self, request, pk=None, **kwargs):
         inmueble = Inmueble.objects.get(id=pk)
